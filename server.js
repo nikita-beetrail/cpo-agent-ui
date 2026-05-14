@@ -46,19 +46,15 @@ app.post('/api/chat', (req, res) => {
 
   const args = ['--print', '--system-prompt', SYSTEM_PROMPT, fullPrompt];
 
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-
   const env = { ...process.env };
   delete env.ANTHROPIC_API_KEY;
-  const proc = execFile('/usr/local/bin/claude', args, { maxBuffer: 10 * 1024 * 1024, env }, (err, stdout, stderr) => {
+
+  execFile('/usr/local/bin/claude', args, { maxBuffer: 10 * 1024 * 1024, env, timeout: 120000 }, (err, stdout, stderr) => {
     if (err) {
-      res.write(`data: ${JSON.stringify({ error: 'Ошибка выполнения Claude CLI' })}\n\n`);
-    } else {
-      res.write(`data: ${JSON.stringify({ done: true, text: stdout.trim() })}\n\n`);
+      console.error('Claude error:', err.message, stderr);
+      return res.status(500).json({ error: 'Ошибка Claude CLI: ' + (stderr || err.message) });
     }
-    res.end();
+    res.json({ text: stdout.trim() });
   });
 });
 
