@@ -50,7 +50,9 @@ app.post('/api/chat', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  const proc = execFile('/usr/local/bin/claude', args, { maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
+  const env = { ...process.env };
+  delete env.ANTHROPIC_API_KEY;
+  const proc = execFile('/usr/local/bin/claude', args, { maxBuffer: 10 * 1024 * 1024, env }, (err, stdout, stderr) => {
     if (err) {
       res.write(`data: ${JSON.stringify({ error: 'Ошибка выполнения Claude CLI' })}\n\n`);
     } else {
