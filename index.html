@@ -709,6 +709,7 @@
         <div class="dot"></div>
         <div class="dot"></div>
         <div class="dot"></div>
+        <span id="thinkingTimer" style="margin-left:8px;font-size:11px;color:var(--text-muted);font-family:inherit;"></span>
       </div>
     </div>
 
@@ -809,10 +810,12 @@
       addMessage('user', text);
       history.push({ role: 'user', content: text });
 
-      // Показать индикатор
       typingEl.classList.add('visible');
       messagesEl.appendChild(typingEl);
       scrollToBottom();
+
+      // Метка времени в индикаторе
+      const timerEl = document.getElementById('thinkingTimer');
 
       try {
         const response = await fetch('/api/chat', {
@@ -821,18 +824,47 @@
           body: JSON.stringify({ message: text, history: history.slice(-10) }),
         });
 
-        const data = await response.json();
-        typingEl.classList.remove('visible');
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let sseBuffer = '';
 
-        if (data.error) {
-          addMessage('assistant', '⚠️ Произошла ошибка. Убедись, что сервер запущен и Claude CLI доступен.');
-        } else {
-          addMessage('assistant', data.text);
-          history.push({ role: 'assistant', content: data.text });
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          sseBuffer += decoder.decode(value, { stream: true });
+          const lines = sseBuffer.split('\n');
+          sseBuffer = lines.pop();
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            try {
+              const event = JSON.parse(line.slice(6));
+
+              // Обновляем таймер пока думает
+              if (event.thinking && timerEl) {
+                timerEl.textContent = `${event.thinking}с`;
+              }
+
+              if (event.error) {
+                typingEl.classList.remove('visible');
+                if (timerEl) timerEl.textContent = '';
+                addMessage('assistant', '⚠️ Ошибка: ' + event.error);
+              }
+
+              if (event.text) {
+                typingEl.classList.remove('visible');
+                if (timerEl) timerEl.textContent = '';
+                addMessage('assistant', event.text);
+                history.push({ role: 'assistant', content: event.text });
+              }
+            } catch (_) {}
+          }
         }
       } catch (e) {
         typingEl.classList.remove('visible');
-        addMessage('assistant', '⚠️ Не удалось соединиться с сервером. Запусти: `node server.js`');
+        if (timerEl) timerEl.textContent = '';
+        addMessage('assistant', '⚠️ Не удалось соединиться с сервером.');
       }
 
       isLoading = false;
