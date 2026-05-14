@@ -1,7 +1,7 @@
 {
   "name": "cpo-agent-ui",
   "version": "1.0.0",
-  "description": "Алекса — CPO советник",
+  "description": "Варвара — CPO советник",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

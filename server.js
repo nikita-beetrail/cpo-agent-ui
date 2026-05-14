@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const SYSTEM_PROMPT = `Ты — Алекса, персональный CPO-советник Никиты, директора по продукту аутсорс-компании Beetrail.
+const SYSTEM_PROMPT = `Ты — Варвара, персональный CPO-советник Никиты, директора по продукту аутсорс-компании Beetrail.
 
 О компании:
 - Beetrail — аутсорс мобильных приложений (FlutterFlow/Flutter)
@@ -37,7 +37,7 @@ app.post('/api/chat', (req, res) => {
   if (!message) return res.status(400).json({ error: 'message required' });
 
   const conversationContext = (history || [])
-    .map(m => `${m.role === 'user' ? 'Никита' : 'Алекса'}: ${m.content}`)
+    .map(m => `${m.role === 'user' ? 'Никита' : 'Варвара'}: ${m.content}`)
     .join('\n');
 
   const fullPrompt = conversationContext
@@ -62,5 +62,5 @@ app.post('/api/chat', (req, res) => {
 
 const PORT = process.env.PORT || 3737;
 app.listen(PORT, () => {
-  console.log(`Алекса запущена на http://localhost:${PORT}`);
+  console.log(`Варвара запущена на http://localhost:${PORT}`);
 });
