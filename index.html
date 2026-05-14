@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Алекса — CPO Советник</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0d0d14;
+      --surface: #13131f;
+      --surface2: #1a1a2e;
+      --border: rgba(138, 92, 246, 0.15);
+      --accent: #a78bfa;
+      --accent2: #c4b5fd;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --user-bubble: #1e1b4b;
+      --alex-bubble: #130f2a;
+      --glow: rgba(167, 139, 250, 0.3);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ─── САЙДБАР С АВАТАРОМ ─────────────────────────────── */
+
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 24px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sidebar::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .avatar-ring {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, var(--accent), #ec4899, var(--accent)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      animation: ring-spin 6s linear infinite;
+    }
+
+    @keyframes ring-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .avatar-ring-2 {
+      position: absolute;
+      inset: -16px;
+      border-radius: 50%;
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      animation: ring-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.05); opacity: 0.6; }
+    }
+
+    /* ─── SVG АВАТАР ─────────────────────────────────────── */
+
+    .avatar-svg {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+      animation: breathe 4s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(167,139,250,0.4));
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    /* Моргание */
+    .eye-left, .eye-right { animation: blink 4s ease-in-out infinite; }
+    .eye-right { animation-delay: 0.08s; }
+
+    @keyframes blink {
+      0%, 90%, 100% { transform: scaleY(1); }
+      95% { transform: scaleY(0.05); }
+    }
+
+    .name-badge {
+      text-align: center;
+    }
+
+    .name-badge h2 {
+      font-size: 22px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--accent2), #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+
+    .name-badge .role {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #4ade80;
+    }
+
+    .status-dot::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+      50% { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    .capabilities {
+      width: 100%;
+    }
+
+    .capabilities h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .cap-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      transition: background 0.2s;
+    }
+
+    .cap-item:hover { background: var(--surface2); color: var(--text); }
+
+    .cap-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      font-size: 11px;
+      color: rgba(148,163,184,0.4);
+      text-align: center;
+    }
+
+    /* ─── ОСНОВНОЙ ЧАТ ───────────────────────────────────── */
+
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+
+    .chat-header-left h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .chat-header-left p {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .clear-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .clear-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* Вступительное сообщение */
+    .welcome {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .welcome .welcome-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+
+    .welcome h2 {
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .welcome p {
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 400px;
+      margin: 0 auto 24px;
+    }
+
+    .suggestion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 7px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(167, 139, 250, 0.08);
+    }
+
+    /* Пузыри сообщений */
+    .message {
+      display: flex;
+      gap: 12px;
+      animation: msg-in 0.3s ease;
+    }
+
+    @keyframes msg-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user { flex-direction: row-reverse; }
+
+    .msg-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .message.assistant .msg-avatar {
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      font-size: 16px;
+    }
+
+    .message.user .msg-avatar {
+      background: linear-gradient(135deg, #1e40af, #3b82f6);
+      color: white;
+      font-size: 13px;
+    }
+
+    .bubble {
+      max-width: 68%;
+      padding: 13px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .message.user .bubble {
+      background: var(--user-bubble);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-bottom-right-radius: 4px;
+    }
+
+    .message.assistant .bubble {
+      background: var(--alex-bubble);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble strong { color: var(--accent2); }
+
+    .bubble p { margin-bottom: 8px; }
+    .bubble p:last-child { margin-bottom: 0; }
+
+    .bubble ol, .bubble ul {
+      margin-left: 18px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+    }
+
+    .bubble li { margin-bottom: 4px; }
+
+    /* Индикатор печатания */
+    .typing-indicator {
+      display: none;
+      gap: 12px;
+      align-items: flex-start;
+      animation: msg-in 0.3s ease;
+    }
+
+    .typing-indicator.visible { display: flex; }
+
+    .typing-dots {
+      background: var(--alex-bubble);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: dot-bounce 1.2s ease-in-out infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot-bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* ─── ПОЛЕ ВВОДА ─────────────────────────────────────── */
+
+    .input-area {
+      padding: 16px 28px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 10px 10px 10px 16px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-wrapper:focus-within {
+      border-color: rgba(167, 139, 250, 0.5);
+      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.08);
+    }
+
+    #input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.5;
+      resize: none;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    #input::placeholder { color: var(--text-muted); }
+
+    #input::-webkit-scrollbar { width: 3px; }
+    #input::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(124,58,237,0.3);
+    }
+
+    .send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(124,58,237,0.5); }
+    .send-btn:active { transform: scale(0.97); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .send-btn svg { color: white; }
+
+    .input-hint {
+      font-size: 11px;
+      color: rgba(148,163,184,0.4);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    /* ─── MARKDOWN ────────────────────────────────────────── */
+
+    .bubble code {
+      background: rgba(167,139,250,0.15);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: 'SF Mono', monospace;
+      color: var(--accent2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- САЙДБАР -->
+  <aside class="sidebar">
+    <div class="avatar-wrapper">
+      <div class="avatar-ring-2"></div>
+      <div class="avatar-ring"></div>
+
+      <!-- SVG Аватар Алексы -->
+      <svg class="avatar-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="skinGrad" cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stop-color="#fde3c8"/>
+            <stop offset="100%" stop-color="#f4c09a"/>
+          </radialGradient>
+          <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#1e1040"/>
+            <stop offset="100%" stop-color="#0d0820"/>
+          </radialGradient>
+          <radialGradient id="hairGrad" cx="50%" cy="0%" r="80%">
+            <stop offset="0%" stop-color="#4a2060"/>
+            <stop offset="100%" stop-color="#1a0a30"/>
+          </radialGradient>
+          <radialGradient id="cheekGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(236,72,153,0.35)"/>
+            <stop offset="100%" stop-color="rgba(236,72,153,0)"/>
+          </radialGradient>
+          <clipPath id="circleClip">
+            <circle cx="100" cy="100" r="100"/>
+          </clipPath>
+          <filter id="softGlow">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+
+        <g clip-path="url(#circleClip)">
+          <!-- Фон -->
+          <circle cx="100" cy="100" r="100" fill="url(#bgGrad)"/>
+
+          <!-- Шея -->
+          <rect x="82" y="138" width="36" height="28" rx="8" fill="url(#skinGrad)"/>
+
+          <!-- Плечи / одежда -->
+          <ellipse cx="100" cy="195" rx="68" ry="42" fill="#2d1b69"/>
+          <ellipse cx="100" cy="188" rx="56" ry="28" fill="#3b2082"/>
+
+          <!-- Волосы (задние) -->
+          <ellipse cx="100" cy="80" rx="58" ry="66" fill="url(#hairGrad)"/>
+          <path d="M42,80 Q30,130 38,175 L52,165 Q46,130 54,90 Z" fill="#1a0a30"/>
+          <path d="M158,80 Q170,130 162,175 L148,165 Q154,130 146,90 Z" fill="#1a0a30"/>
+
+          <!-- Лицо -->
+          <ellipse cx="100" cy="100" rx="48" ry="55" fill="url(#skinGrad)"/>
+
+          <!-- Брови -->
+          <path d="M70,72 Q82,66 88,70" stroke="#5a3020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M112,70 Q118,66 130,72" stroke="#5a3020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+          <!-- Глаза -->
+          <g class="eye-left" transform-origin="79 90">
+            <ellipse cx="79" cy="90" rx="10" ry="11" fill="white"/>
+            <ellipse cx="79" cy="91" rx="7" ry="7.5" fill="#4a1a6a"/>
+            <ellipse cx="79" cy="91" rx="4.5" ry="4.5" fill="#1a0030"/>
+            <ellipse cx="76" cy="88" rx="1.8" ry="1.8" fill="white" opacity="0.9"/>
+            <ellipse cx="82" cy="93" rx="0.8" ry="0.8" fill="white" opacity="0.5"/>
+            <!-- Ресницы -->
+            <path d="M69,83 Q70,78 72,80" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M74,80 Q75,75 77,78" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M79,79 Q80,74 82,77" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M84,80 Q86,76 88,79" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <g class="eye-right" transform-origin="121 90">
+            <ellipse cx="121" cy="90" rx="10" ry="11" fill="white"/>
+            <ellipse cx="121" cy="91" rx="7" ry="7.5" fill="#4a1a6a"/>
+            <ellipse cx="121" cy="91" rx="4.5" ry="4.5" fill="#1a0030"/>
+            <ellipse cx="118" cy="88" rx="1.8" ry="1.8" fill="white" opacity="0.9"/>
+            <ellipse cx="124" cy="93" rx="0.8" ry="0.8" fill="white" opacity="0.5"/>
+            <!-- Ресницы -->
+            <path d="M111,83 Q112,78 114,80" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M116,80 Q117,75 119,78" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M121,79 Q122,74 124,77" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M126,80 Q128,76 130,79" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          </g>
+
+          <!-- Нос -->
+          <path d="M100,95 Q97,108 94,114 Q100,117 106,114 Q103,108 100,95" fill="rgba(180,100,60,0.25)" stroke="rgba(160,80,40,0.3)" stroke-width="0.5"/>
+
+          <!-- Румянец -->
+          <ellipse cx="68" cy="108" rx="13" ry="9" fill="url(#cheekGrad)"/>
+          <ellipse cx="132" cy="108" rx="13" ry="9" fill="url(#cheekGrad)"/>
+
+          <!-- Губы -->
+          <path d="M88,122 Q94,118 100,120 Q106,118 112,122" stroke="#c0536a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M88,122 Q94,128 100,126 Q106,128 112,122" fill="#e07090" opacity="0.85"/>
+          <path d="M88,122 Q100,120 112,122 Q106,118 100,117 Q94,118 88,122 Z" fill="#f48fb1" opacity="0.7"/>
+          <!-- Блик на губах -->
+          <ellipse cx="97" cy="121" rx="5" ry="1.5" fill="rgba(255,255,255,0.3)" transform="rotate(-5,97,121)"/>
+
+          <!-- Серьги -->
+          <circle cx="52" cy="105" r="4" fill="#a855f7" filter="url(#softGlow)"/>
+          <circle cx="52" cy="105" r="2" fill="#c084fc"/>
+          <circle cx="148" cy="105" r="4" fill="#a855f7" filter="url(#softGlow)"/>
+          <circle cx="148" cy="105" r="2" fill="#c084fc"/>
+
+          <!-- Волосы (передние) -->
+          <path d="M52,80 Q50,55 65,42 Q80,30 100,28 Q120,30 135,42 Q150,55 148,80 Q130,65 100,63 Q70,65 52,80 Z" fill="url(#hairGrad)"/>
+          <!-- Прядь -->
+          <path d="M52,80 Q48,100 55,130 Q60,90 65,75 Z" fill="#2a1050"/>
+          <!-- Блик на волосах -->
+          <path d="M70,35 Q90,28 110,32" stroke="rgba(167,139,250,0.25)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- Внешнее свечение -->
+        <circle cx="100" cy="100" r="99" fill="none" stroke="rgba(167,139,250,0.15)" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <div class="name-badge">
+      <h2>Алекса</h2>
+      <div class="role">CPO Советник</div>
+      <div class="status-dot">Онлайн</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="capabilities">
+      <h3>Специализация</h3>
+      <div class="cap-item">
+        <div class="cap-icon">📊</div>
+        Стратегия и портфель
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">💰</div>
+        Допродажи и маржа
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">👥</div>
+        Команда и PM-ы
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">📈</div>
+        Личный рост CPO
+      </div>
+      <div class="cap-item">
+        <div class="cap-icon">🤝</div>
+        Переговоры с клиентами
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      Beetrail · CPO Assistant v1
+    </div>
+  </aside>
+
+  <!-- ОСНОВНАЯ ОБЛАСТЬ ЧАТА -->
+  <main class="chat-area">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <h1>Чат с Алексой</h1>
+        <p>Твой персональный CPO-советник</p>
+      </div>
+      <button class="clear-btn" onclick="clearChat()">Очистить чат</button>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">✨</div>
+        <h2>Привет, Никита</h2>
+        <p>Готова разобраться с любым вопросом по стратегии, клиентам, команде или твоему росту как CPO.</p>
+        <div class="suggestion-chips">
+          <button class="chip" onclick="sendChip(this)">Как закрыть постпроектную поддержку?</button>
+          <button class="chip" onclick="sendChip(this)">Как перейти на уровень CPO 2?</button>
+          <button class="chip" onclick="sendChip(this)">Оцени мой портфель клиентов</button>
+          <button class="chip" onclick="sendChip(this)">Как увеличить маржинальность?</button>
+          <button class="chip" onclick="sendChip(this)">Что делать с клиентом на T&M?</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing-indicator" id="typing">
+      <div class="msg-avatar">✦</div>
+      <div class="typing-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrapper">
+        <textarea
+          id="input"
+          rows="1"
+          placeholder="Спроси Алексу о стратегии, клиентах, команде..."
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </div>
+      <div class="input-hint">Enter — отправить · Shift+Enter — новая строка</div>
+    </div>
+  </main>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const inputEl = document.getElementById('input');
+    const sendBtn = document.getElementById('sendBtn');
+    const typingEl = document.getElementById('typing');
+    const welcomeEl = document.getElementById('welcome');
+
+    let history = [];
+    let isLoading = false;
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function sendChip(btn) {
+      inputEl.value = btn.textContent;
+      sendMessage();
+    }
+
+    function scrollToBottom() {
+      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+    }
+
+    function addMessage(role, text) {
+      const isUser = role === 'user';
+      const div = document.createElement('div');
+      div.className = `message ${role}`;
+
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'msg-avatar';
+      avatarDiv.textContent = isUser ? 'Н' : '✦';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = formatMarkdown(text);
+
+      div.appendChild(avatarDiv);
+      div.appendChild(bubble);
+      messagesEl.appendChild(div);
+      scrollToBottom();
+      return bubble;
+    }
+
+    function formatMarkdown(text) {
+      return text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/`(.+?)`/g, '<code>$1</code>')
+        .replace(/^(\d+\.\s)/gm, '<br>$1')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+    }
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text || isLoading) return;
+
+      if (welcomeEl) welcomeEl.style.display = 'none';
+
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+      isLoading = true;
+      sendBtn.disabled = true;
+
+      addMessage('user', text);
+      history.push({ role: 'user', content: text });
+
+      // Показать индикатор
+      typingEl.classList.add('visible');
+      messagesEl.appendChild(typingEl);
+      scrollToBottom();
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text, history: history.slice(-10) }),
+        });
+
+        const data = await response.json();
+        typingEl.classList.remove('visible');
+
+        if (data.error) {
+          addMessage('assistant', '⚠️ Произошла ошибка. Убедись, что сервер запущен и Claude CLI доступен.');
+        } else {
+          addMessage('assistant', data.text);
+          history.push({ role: 'assistant', content: data.text });
+        }
+      } catch (e) {
+        typingEl.classList.remove('visible');
+        addMessage('assistant', '⚠️ Не удалось соединиться с сервером. Запусти: `node server.js`');
+      }
+
+      isLoading = false;
+      sendBtn.disabled = false;
+      inputEl.focus();
+    }
+
+    function clearChat() {
+      const msgs = messagesEl.querySelectorAll('.message');
+      msgs.forEach(m => m.remove());
+      history = [];
+      if (welcomeEl) welcomeEl.style.display = 'block';
+    }
+
+    inputEl.focus();
+  </script>
+</body>
+</html>
