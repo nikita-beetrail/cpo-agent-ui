@@ -44,13 +44,13 @@ app.post('/api/chat', (req, res) => {
     ? `${conversationContext}\nНикита: ${message}`
     : message;
 
-  const args = ['--print', '--system', SYSTEM_PROMPT, fullPrompt];
+  const args = ['--print', '--system-prompt', SYSTEM_PROMPT, fullPrompt];
 
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
 
-  const proc = execFile('claude', args, { maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
+  const proc = execFile('/usr/local/bin/claude', args, { maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
     if (err) {
       res.write(`data: ${JSON.stringify({ error: 'Ошибка выполнения Claude CLI' })}\n\n`);
     } else {
