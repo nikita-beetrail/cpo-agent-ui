@@ -21,6 +21,11 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
+const KB_PATH = path.join(__dirname, 'knowledge_base.md');
+function loadKB() {
+  try { return fs.readFileSync(KB_PATH, 'utf8'); } catch (_) { return ''; }
+}
+
 const PROMPTS = {
   varvara: `Ты — Варвара, персональный CPO-советник Никиты, директора по продукту аутсорс-компании Beetrail.
 
@@ -144,7 +149,9 @@ app.post('/api/chat', (req, res) => {
   }, 3000);
 
   const project = req.body.project || 'varvara';
-  const systemPrompt = PROMPTS[project] || PROMPTS.varvara;
+  const base = PROMPTS[project] || PROMPTS.varvara;
+  const kb = project === 'varvara' ? '\n\n---\n\n' + loadKB() : '';
+  const systemPrompt = base + kb;
   const args = ['--print', '--system-prompt', systemPrompt, fullPrompt];
   const start = Date.now();
 
