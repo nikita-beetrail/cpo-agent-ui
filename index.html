@@ -439,6 +439,248 @@
       30% { transform: translateY(-6px); opacity: 1; }
     }
 
+    /* ─── ВКЛАДКИ ───────────────────────────────────────── */
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 0 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      padding: 14px 16px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: color 0.2s;
+      position: relative;
+      top: 1px;
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-btn.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-badge {
+      background: var(--accent);
+      color: #1a0040;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+    }
+
+    .tab-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .tab-panel.active { display: flex; }
+
+    /* ─── БЭКЛОГ ─────────────────────────────────────────── */
+
+    .backlog-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .backlog-area::-webkit-scrollbar { width: 4px; }
+    .backlog-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .backlog-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .backlog-input-row input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .backlog-input-row input:focus { border-color: rgba(167,139,250,0.5); }
+    .backlog-input-row input::placeholder { color: var(--text-muted); }
+
+    .backlog-tag-select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .backlog-add-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: white;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .backlog-add-btn:hover { transform: scale(1.05); }
+
+    .backlog-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      margin-top: 4px;
+    }
+
+    .backlog-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 10px;
+      margin-bottom: 6px;
+      background: var(--surface2);
+      border: 1px solid transparent;
+      transition: border-color 0.2s, opacity 0.2s;
+      animation: msg-in 0.25s ease;
+    }
+
+    .backlog-item:hover { border-color: var(--border); }
+    .backlog-item.done { opacity: 0.45; }
+
+    .backlog-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      transition: all 0.2s;
+    }
+
+    .backlog-check:hover { border-color: var(--accent); }
+    .backlog-item.done .backlog-check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .backlog-item.done .backlog-check::after { content: '✓'; font-size: 11px; color: white; }
+
+    .backlog-body { flex: 1; min-width: 0; }
+
+    .backlog-text {
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .backlog-item.done .backlog-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .backlog-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .backlog-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(167,139,250,0.12);
+      color: var(--accent2);
+      border: 1px solid rgba(167,139,250,0.2);
+    }
+
+    .backlog-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .backlog-del {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.2s, color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .backlog-item:hover .backlog-del { opacity: 1; }
+    .backlog-del:hover { color: #f87171; }
+
+    .backlog-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .backlog-empty .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .backlog-empty p { font-size: 14px; }
+
+    .done-divider {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin: 16px 0 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .done-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
     /* ─── ПОЛЕ ВВОДА ─────────────────────────────────────── */
 
     .input-area {
@@ -678,42 +920,55 @@
     </div>
   </aside>
 
-  <!-- ОСНОВНАЯ ОБЛАСТЬ ЧАТА -->
+  <!-- ОСНОВНАЯ ОБЛАСТЬ -->
   <main class="chat-area">
     <div class="chat-header">
       <div class="chat-header-left">
-        <h1>Чат с Варварой</h1>
-        <p>Твой персональный CPO-советник</p>
+        <h1 id="headerTitle">Чат с Варварой</h1>
+        <p id="headerSub">Твой персональный CPO-советник</p>
       </div>
-      <button class="clear-btn" onclick="clearChat()">Очистить чат</button>
+      <button class="clear-btn" id="headerAction" onclick="clearChat()">Очистить чат</button>
     </div>
 
-    <div class="messages" id="messages">
-      <div class="welcome" id="welcome">
-        <div class="welcome-icon">✨</div>
-        <h2>Привет, Никита</h2>
-        <p>Готова разобраться с любым вопросом по стратегии, клиентам, команде или твоему росту как CPO.</p>
-        <div class="suggestion-chips">
-          <button class="chip" onclick="sendChip(this)">Как закрыть постпроектную поддержку?</button>
-          <button class="chip" onclick="sendChip(this)">Как перейти на уровень CPO 2?</button>
-          <button class="chip" onclick="sendChip(this)">Оцени мой портфель клиентов</button>
-          <button class="chip" onclick="sendChip(this)">Как увеличить маржинальность?</button>
-          <button class="chip" onclick="sendChip(this)">Что делать с клиентом на T&M?</button>
+    <!-- ВКЛАДКИ -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabChat" onclick="switchTab('chat')">
+        💬 Чат
+      </button>
+      <button class="tab-btn" id="tabBacklog" onclick="switchTab('backlog')">
+        📋 Задачи
+        <span class="tab-badge" id="backlogBadge" style="display:none">0</span>
+      </button>
+    </div>
+
+    <!-- ПАНЕЛЬ ЧАТА -->
+    <div class="tab-panel active" id="panelChat">
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcome">
+          <div class="welcome-icon">✨</div>
+          <h2>Привет, Никита</h2>
+          <p>Готова разобраться с любым вопросом по стратегии, клиентам, команде или твоему росту как CPO.</p>
+          <div class="suggestion-chips">
+            <button class="chip" onclick="sendChip(this)">Как закрыть постпроектную поддержку?</button>
+            <button class="chip" onclick="sendChip(this)">Как перейти на уровень CPO 2?</button>
+            <button class="chip" onclick="sendChip(this)">Оцени мой портфель клиентов</button>
+            <button class="chip" onclick="sendChip(this)">Как увеличить маржинальность?</button>
+            <button class="chip" onclick="sendChip(this)">Что делать с клиентом на T&M?</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="typing-indicator" id="typing">
-      <div class="msg-avatar">✦</div>
-      <div class="typing-dots">
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <div class="dot"></div>
-        <span id="thinkingTimer" style="margin-left:8px;font-size:11px;color:var(--text-muted);font-family:inherit;"></span>
+      <div class="typing-indicator" id="typing">
+        <div class="msg-avatar">✦</div>
+        <div class="typing-dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <span id="thinkingTimer" style="margin-left:8px;font-size:11px;color:var(--text-muted);font-family:inherit;"></span>
+        </div>
       </div>
-    </div>
 
-    <div class="input-area">
+      <div class="input-area">
       <div class="input-wrapper">
         <textarea
           id="input"
@@ -731,6 +986,28 @@
       </div>
       <div class="input-hint">Enter — отправить · Shift+Enter — новая строка</div>
     </div>
+    </div><!-- /panelChat -->
+
+    <!-- ПАНЕЛЬ БЭКЛОГА -->
+    <div class="tab-panel" id="panelBacklog">
+      <div class="backlog-area">
+        <div class="backlog-input-row">
+          <input type="text" id="backlogInput" placeholder="Добавить задачу на будущее..." onkeydown="if(event.key==='Enter') addBacklogItem()">
+          <select class="backlog-tag-select" id="backlogTag">
+            <option value="">Без тега</option>
+            <option value="Агенты">Агенты</option>
+            <option value="Хвостики">Хвостики</option>
+            <option value="Обучение">Обучение</option>
+            <option value="CPO">CPO</option>
+            <option value="Beetrail">Beetrail</option>
+            <option value="Идея">Идея</option>
+          </select>
+          <button class="backlog-add-btn" onclick="addBacklogItem()">+</button>
+        </div>
+        <div id="backlogList"></div>
+      </div>
+    </div><!-- /panelBacklog -->
+
   </main>
 
   <script>
@@ -879,6 +1156,151 @@
       if (welcomeEl) welcomeEl.style.display = 'block';
     }
 
+    // ─── ВКЛАДКИ ─────────────────────────────────────────
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+      document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+
+      if (tab === 'chat') {
+        document.getElementById('headerTitle').textContent = 'Чат с Варварой';
+        document.getElementById('headerSub').textContent = 'Твой персональный CPO-советник';
+        document.getElementById('headerAction').textContent = 'Очистить чат';
+        document.getElementById('headerAction').onclick = clearChat;
+        inputEl.focus();
+      } else {
+        document.getElementById('headerTitle').textContent = 'Задачи на будущее';
+        document.getElementById('headerSub').textContent = 'Бэклог идей и дел';
+        document.getElementById('headerAction').textContent = 'Скрыть выполненные';
+        document.getElementById('headerAction').onclick = toggleDone;
+        document.getElementById('backlogInput').focus();
+      }
+    }
+
+    // ─── БЭКЛОГ ───────────────────────────────────────────
+    let backlogItems = [];
+    let showDone = false;
+
+    async function loadBacklog() {
+      try {
+        const res = await fetch('/api/backlog');
+        backlogItems = await res.json();
+        renderBacklog();
+        updateBadge();
+      } catch (_) {}
+    }
+
+    function updateBadge() {
+      const open = backlogItems.filter(i => !i.done).length;
+      const badge = document.getElementById('backlogBadge');
+      badge.style.display = open > 0 ? 'inline-flex' : 'none';
+      badge.textContent = open;
+    }
+
+    function renderBacklog() {
+      const list = document.getElementById('backlogList');
+      const open = backlogItems.filter(i => !i.done);
+      const done = backlogItems.filter(i => i.done);
+
+      if (backlogItems.length === 0) {
+        list.innerHTML = `<div class="backlog-empty"><div class="empty-icon">🎯</div><p>Пока пусто. Добавь первую задачу!</p></div>`;
+        return;
+      }
+
+      let html = '';
+
+      if (open.length > 0) {
+        html += `<div class="backlog-section-title">Открытые · ${open.length}</div>`;
+        open.forEach(item => { html += renderItem(item); });
+      }
+
+      if (done.length > 0) {
+        html += `<div class="done-divider" onclick="toggleDone()">
+          ${showDone ? '▾' : '▸'} Выполненные · ${done.length}
+        </div>`;
+        if (showDone) {
+          done.forEach(item => { html += renderItem(item); });
+        }
+      }
+
+      list.innerHTML = html;
+    }
+
+    function renderItem(item) {
+      const date = new Date(item.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+      return `
+        <div class="backlog-item ${item.done ? 'done' : ''}" id="bl-${item.id}">
+          <div class="backlog-check" onclick="toggleItem('${item.id}')"></div>
+          <div class="backlog-body">
+            <div class="backlog-text">${escapeHtml(item.text)}</div>
+            <div class="backlog-meta">
+              ${item.tag ? `<span class="backlog-tag">${escapeHtml(item.tag)}</span>` : ''}
+              <span class="backlog-date">${date}</span>
+            </div>
+          </div>
+          <button class="backlog-del" onclick="deleteItem('${item.id}')" title="Удалить">×</button>
+        </div>`;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function addBacklogItem() {
+      const input = document.getElementById('backlogInput');
+      const tag = document.getElementById('backlogTag').value;
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      try {
+        const res = await fetch('/api/backlog', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, tag }),
+        });
+        const item = await res.json();
+        backlogItems.unshift(item);
+        renderBacklog();
+        updateBadge();
+      } catch (_) {}
+    }
+
+    async function toggleItem(id) {
+      const item = backlogItems.find(i => i.id === id);
+      if (!item) return;
+      item.done = !item.done;
+      renderBacklog();
+      updateBadge();
+      try {
+        await fetch(`/api/backlog/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ done: item.done }),
+        });
+      } catch (_) {}
+    }
+
+    async function deleteItem(id) {
+      backlogItems = backlogItems.filter(i => i.id !== id);
+      renderBacklog();
+      updateBadge();
+      try {
+        await fetch(`/api/backlog/${id}`, { method: 'DELETE' });
+      } catch (_) {}
+    }
+
+    function toggleDone() {
+      showDone = !showDone;
+      const btn = document.getElementById('headerAction');
+      if (btn && document.getElementById('panelBacklog').classList.contains('active')) {
+        btn.textContent = showDone ? 'Скрыть выполненные' : 'Показать выполненные';
+      }
+      renderBacklog();
+    }
+
+    // Загружаем бэклог при старте
+    loadBacklog();
     inputEl.focus();
   </script>
 </body>

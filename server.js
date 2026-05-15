@@ -1,5 +1,21 @@
 const express = require('express');
 const { execFile } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+const BACKLOG_FILE = path.join(__dirname, 'backlog.json');
+
+function readBacklog() {
+  try {
+    return JSON.parse(fs.readFileSync(BACKLOG_FILE, 'utf8'));
+  } catch (_) {
+    return [];
+  }
+}
+
+function writeBacklog(items) {
+  fs.writeFileSync(BACKLOG_FILE, JSON.stringify(items, null, 2));
+}
 
 const app = express();
 app.use(express.json());
@@ -44,6 +60,47 @@ function buildEnv() {
 console.log(`[${new Date().toISOString()}] Варвара стартует на порту 3737`);
 
 app.get('/api/ping', (req, res) => res.json({ ok: true }));
+
+// ─── БЭКЛОГ ───────────────────────────────────────────────
+app.get('/api/backlog', (req, res) => {
+  res.json(readBacklog());
+});
+
+app.post('/api/backlog', (req, res) => {
+  const { text, tag } = req.body;
+  if (!text?.trim()) return res.status(400).json({ error: 'text required' });
+  const items = readBacklog();
+  const item = {
+    id: Date.now().toString(),
+    text: text.trim(),
+    tag: tag || '',
+    done: false,
+    createdAt: new Date().toISOString(),
+  };
+  items.unshift(item);
+  writeBacklog(items);
+  res.json(item);
+});
+
+app.patch('/api/backlog/:id', (req, res) => {
+  const items = readBacklog();
+  const item = items.find(i => i.id === req.params.id);
+  if (!item) return res.status(404).json({ error: 'not found' });
+  if (req.body.done !== undefined) item.done = req.body.done;
+  if (req.body.text !== undefined) item.text = req.body.text;
+  if (req.body.tag !== undefined) item.tag = req.body.tag;
+  writeBacklog(items);
+  res.json(item);
+});
+
+app.delete('/api/backlog/:id', (req, res) => {
+  const items = readBacklog();
+  const idx = items.findIndex(i => i.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'not found' });
+  items.splice(idx, 1);
+  writeBacklog(items);
+  res.json({ ok: true });
+});
 
 app.post('/api/chat', (req, res) => {
   const { message, history } = req.body;
