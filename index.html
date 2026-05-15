@@ -210,6 +210,91 @@
       flex-shrink: 0;
     }
 
+    /* ─── ПЕРЕКЛЮЧАТЕЛЬ ПРОЕКТА ─────────────────────────── */
+
+    .project-switcher {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .project-switcher h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .project-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .proj-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 9px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      width: 100%;
+    }
+
+    .proj-btn:hover { background: var(--surface2); color: var(--text); }
+
+    .proj-btn.active {
+      background: rgba(167,139,250,0.1);
+      border-color: rgba(167,139,250,0.25);
+      color: var(--accent2);
+    }
+
+    .proj-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .proj-dot.varvara { background: #a78bfa; }
+    .proj-dot.hvostiki { background: #fb923c; }
+
+    /* ─── ФИЛЬТР ЗАДАЧ ───────────────────────────────────── */
+
+    .backlog-filter {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover { color: var(--text); }
+    .filter-btn.active {
+      background: rgba(167,139,250,0.12);
+      border-color: rgba(167,139,250,0.35);
+      color: var(--accent2);
+    }
+
     .sidebar-footer {
       margin-top: auto;
       font-size: 11px;
@@ -891,6 +976,22 @@
 
     <div class="divider"></div>
 
+    <div class="project-switcher">
+      <h3>Проект</h3>
+      <div class="project-btns">
+        <button class="proj-btn active" id="projVarvara" onclick="switchProject('varvara')">
+          <span class="proj-dot varvara"></span>
+          Варвара
+        </button>
+        <button class="proj-btn" id="projHvostiki" onclick="switchProject('hvostiki')">
+          <span class="proj-dot hvostiki"></span>
+          Хвостики
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
     <div class="capabilities">
       <h3>Специализация</h3>
       <div class="cap-item">
@@ -991,15 +1092,20 @@
     <!-- ПАНЕЛЬ БЭКЛОГА -->
     <div class="tab-panel" id="panelBacklog">
       <div class="backlog-area">
+        <div class="backlog-filter">
+          <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">Все</button>
+          <button class="filter-btn" id="filterVarvara" onclick="setFilter('Варвара')">🔮 Варвара</button>
+          <button class="filter-btn" id="filterHvostiki" onclick="setFilter('Хвостики')">🐾 Хвостики</button>
+        </div>
         <div class="backlog-input-row">
           <input type="text" id="backlogInput" placeholder="Добавить задачу на будущее..." onkeydown="if(event.key==='Enter') addBacklogItem()">
           <select class="backlog-tag-select" id="backlogTag">
-            <option value="">Без тега</option>
+            <option value="Варвара">🔮 Варвара</option>
+            <option value="Хвостики">🐾 Хвостики</option>
+            <option value="">Без проекта</option>
             <option value="Агенты">Агенты</option>
-            <option value="Хвостики">Хвостики</option>
             <option value="Обучение">Обучение</option>
             <option value="CPO">CPO</option>
-            <option value="Beetrail">Beetrail</option>
             <option value="Идея">Идея</option>
           </select>
           <button class="backlog-add-btn" onclick="addBacklogItem()">+</button>
@@ -1019,6 +1125,41 @@
 
     let history = [];
     let isLoading = false;
+    let currentProject = 'varvara';
+    let backlogFilter = 'all';
+
+    const PROJECT_LABELS = {
+      varvara: { name: 'Варвара', sub: 'CPO-помощник · Beetrail', icon: '🔮' },
+      hvostiki: { name: 'Хвостики', sub: 'Собственный продукт · Дневник питомцев', icon: '🐾' },
+    };
+
+    function switchProject(project) {
+      currentProject = project;
+      history = []; // сбрасываем историю при смене проекта
+
+      // Обновляем кнопки сайдбара
+      document.getElementById('projVarvara').classList.toggle('active', project === 'varvara');
+      document.getElementById('projHvostiki').classList.toggle('active', project === 'hvostiki');
+
+      // Обновляем заголовок если в режиме чата
+      const label = PROJECT_LABELS[project];
+      if (document.getElementById('panelChat').classList.contains('active')) {
+        document.getElementById('headerTitle').textContent = 'Чат с Варварой';
+        document.getElementById('headerSub').textContent = label.icon + ' ' + label.sub;
+      }
+
+      // Сбрасываем чат
+      const msgs = messagesEl.querySelectorAll('.message');
+      msgs.forEach(m => m.remove());
+      if (welcomeEl) {
+        welcomeEl.style.display = 'block';
+        welcomeEl.querySelector('p').textContent =
+          project === 'hvostiki'
+            ? 'Режим проекта Хвостики. Спрашивай про продукт, фичи, вайб-кодинг, приоритеты.'
+            : 'Готова разобраться с любым вопросом по стратегии, клиентам, команде или твоему росту как CPO.';
+      }
+      inputEl.focus();
+    }
 
     function autoResize(el) {
       el.style.height = 'auto';
@@ -1098,7 +1239,7 @@
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, history: history.slice(-10) }),
+          body: JSON.stringify({ message: text, history: history.slice(-10), project: currentProject }),
         });
 
         const reader = response.body.getReader();
@@ -1182,6 +1323,14 @@
     let backlogItems = [];
     let showDone = false;
 
+    function setFilter(filter) {
+      backlogFilter = filter;
+      document.getElementById('filterAll').classList.toggle('active', filter === 'all');
+      document.getElementById('filterVarvara').classList.toggle('active', filter === 'Варвара');
+      document.getElementById('filterHvostiki').classList.toggle('active', filter === 'Хвостики');
+      renderBacklog();
+    }
+
     async function loadBacklog() {
       try {
         const res = await fetch('/api/backlog');
@@ -1200,8 +1349,11 @@
 
     function renderBacklog() {
       const list = document.getElementById('backlogList');
-      const open = backlogItems.filter(i => !i.done);
-      const done = backlogItems.filter(i => i.done);
+      const filtered = backlogFilter === 'all'
+        ? backlogItems
+        : backlogItems.filter(i => i.tag === backlogFilter);
+      const open = filtered.filter(i => !i.done);
+      const done = filtered.filter(i => i.done);
 
       if (backlogItems.length === 0) {
         list.innerHTML = `<div class="backlog-empty"><div class="empty-icon">🎯</div><p>Пока пусто. Добавь первую задачу!</p></div>`;
