@@ -17,7 +17,7 @@
   },
   {
     "id": "1778835697891",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "Git Worktree — параллельно разрабатывать фичи Варвары в отдельных ветках (видео 03:14:39)",
     "column": "Бэклог",
     "agent": "",
@@ -26,7 +26,7 @@
   },
   {
     "id": "1778835697889",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "Скилл «backlog-manager» — голосовая/текстовая команда автоматически создаёт задачу в бэклоге (видео 01:34:37)",
     "column": "Бэклог",
     "agent": "",
@@ -35,7 +35,7 @@
   },
   {
     "id": "1778835697888",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "Настройка effort — оптимальный effort для разных типов запросов к Claude (видео 02:50:39)",
     "column": "Бэклог",
     "agent": "",
@@ -44,7 +44,7 @@
   },
   {
     "id": "1778835697886",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "Статуслайн — добавить индикатор % заполнения контекстного окна в терминал (видео 02:44:38)",
     "column": "Бэклог",
     "agent": "",
@@ -61,7 +61,7 @@
   },
   {
     "id": "1778835697883",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "Superpowers — внедрить фреймворк в рабочий процесс разработки Варвары (видео 03:44:07)",
     "column": "Бэклог",
     "agent": "",
@@ -70,7 +70,7 @@
   },
   {
     "id": "1778835697881",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "GitHub Actions — автодеплой Варвары при пуше в main (видео 03:32:00)",
     "column": "Бэклог",
     "agent": "",
@@ -79,7 +79,7 @@
   },
   {
     "id": "1747267200002",
-    "projectId": "varvara",
+    "projectId": "obuchenie",
     "title": "Создать субагентов: бэкенд, фронтенд, тестировщик, PM-агент",
     "column": "Бэклог",
     "agent": "",

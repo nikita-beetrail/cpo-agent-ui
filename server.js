@@ -116,7 +116,7 @@ app.patch('/api/tasks/:id', (req, res) => {
   const tasks = readTasks();
   const task = tasks.find(t => t.id === req.params.id);
   if (!task) return res.status(404).json({ error: 'not found' });
-  ['column', 'title', 'agent', 'priority'].forEach(k => {
+  ['column', 'title', 'agent', 'priority', 'projectId'].forEach(k => {
     if (req.body[k] !== undefined) task[k] = req.body[k];
   });
   writeTasks(tasks);
