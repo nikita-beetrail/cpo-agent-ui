@@ -343,7 +343,7 @@ function renderKanban(){
   if(!project)return;
   const board=document.getElementById('kanbanBoard');
   board.innerHTML=project.columns.map((col,colIdx)=>{
-    const cards=state.tasks.filter(t=>t.column===col);
+    const cards=state.tasks.filter(t=>t.column===col).sort((a,b)=>PRIORITY_ORDER.indexOf(a.priority||'medium')-PRIORITY_ORDER.indexOf(b.priority||'medium'));
     const isFirst=colIdx===0,isLast=colIdx===project.columns.length-1;
     const safeCol=col.replace(/'/g,"\\'");
     return `<div class="kanban-column">
