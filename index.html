@@ -147,6 +147,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .priority-badge.medium{background:rgba(250,204,21,.12);color:#fbbf24}
 .priority-badge.low{background:rgba(96,165,250,.12);color:#60a5fa}
 .priority-badge.someday{background:rgba(100,116,139,.12);color:#94a3b8}
+.priority-dropdown{position:fixed;background:#1e2132;border:1px solid var(--border-hover);border-radius:8px;padding:4px;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:150px}
+.priority-dropdown-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;font-size:12px;color:var(--text-secondary);transition:background .1s}
+.priority-dropdown-item:hover{background:var(--bg-hover);color:var(--text-primary)}
+.priority-dropdown-item.active{color:var(--text-primary);font-weight:600}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
@@ -297,7 +301,11 @@ const state={projects:[],currentProjectId:null,tasks:[],activeTab:'chat',isSendi
 async function init(){
   renderIconPicker();
   await loadProjects();
-  if(state.projects.length>0) await selectProject(state.projects[0].id);
+  const savedProject=localStorage.getItem('activeProjectId');
+  const savedTab=localStorage.getItem('activeTab');
+  const startId=(savedProject&&state.projects.find(p=>p.id===savedProject))?savedProject:state.projects[0]?.id;
+  if(startId) await selectProject(startId);
+  if(savedTab==='tasks') switchTab('tasks');
 }
 
 async function loadProjects(){
@@ -321,6 +329,7 @@ function renderSidebar(){
 
 async function selectProject(id){
   state.currentProjectId=id;
+  localStorage.setItem('activeProjectId',id);
   const p=state.projects.find(x=>x.id===id);
   if(!p)return;
   document.getElementById('headerIcon').textContent=p.icon;
@@ -396,7 +405,7 @@ function renderCard(task,isFirst,isLast){
     </div>
     ${task.agent?`<div class="task-card-agent">${escHtml(task.agent)}</div>`:''}
     <div class="task-card-footer">
-      <span class="priority-badge ${p}" onclick="cyclePriority('${task.id}','${p}')" title="Нажми для смены приоритета">${pc.dot} ${pc.label}</span>
+      <span class="priority-badge ${p}" onclick="showPriorityDropdown(event,'${task.id}','${p}')">${pc.dot} ${pc.label}</span>
       <div style="display:flex;align-items:center;gap:6px">
         <span class="task-card-date">${date}</span>
         <div class="task-card-nav">
@@ -408,12 +417,32 @@ function renderCard(task,isFirst,isLast){
   </div>`;
 }
 
-async function cyclePriority(taskId,current){
-  const idx=PRIORITY_ORDER.indexOf(current);
-  const next=PRIORITY_ORDER[(idx+1)%PRIORITY_ORDER.length];
-  await fetch(`/api/tasks/${taskId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({priority:next})});
-  const task=state.tasks.find(t=>t.id===taskId);
-  if(task){task.priority=next;renderKanban();}
+function showPriorityDropdown(e,taskId,current){
+  e.stopPropagation();
+  document.getElementById('priorityDropdown')?.remove();
+  const rect=e.currentTarget.getBoundingClientRect();
+  const dropdown=document.createElement('div');
+  dropdown.id='priorityDropdown';
+  dropdown.className='priority-dropdown';
+  dropdown.style.top=(rect.bottom+4)+'px';
+  dropdown.style.left=rect.left+'px';
+  PRIORITY_ORDER.forEach(p=>{
+    const pc=PRIORITY_CONFIG[p];
+    const item=document.createElement('div');
+    item.className='priority-dropdown-item'+(p===current?' active':'');
+    item.innerHTML=`${pc.dot} ${pc.label}`;
+    item.onclick=async(ev)=>{
+      ev.stopPropagation();
+      dropdown.remove();
+      if(p===current)return;
+      await fetch(`/api/tasks/${taskId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({priority:p})});
+      const task=state.tasks.find(t=>t.id===taskId);
+      if(task){task.priority=p;renderKanban();}
+    };
+    dropdown.appendChild(item);
+  });
+  document.body.appendChild(dropdown);
+  setTimeout(()=>document.addEventListener('click',()=>dropdown.remove(),{once:true}),0);
 }
 
 function showInlineAdd(colIdx){
@@ -574,6 +603,7 @@ async function sendMessage(){
 
 function switchTab(tab){
   state.activeTab=tab;
+  localStorage.setItem('activeTab',tab);
   document.getElementById('tabChat').classList.toggle('active',tab==='chat');
   document.getElementById('tabTasks').classList.toggle('active',tab==='tasks');
   document.getElementById('tabBtnChat').classList.toggle('active',tab==='chat');
