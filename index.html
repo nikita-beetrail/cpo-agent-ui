@@ -1,1459 +1,543 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Варвара — CPO Советник</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg: #0d0d14;
-      --surface: #13131f;
-      --surface2: #1a1a2e;
-      --border: rgba(138, 92, 246, 0.15);
-      --accent: #a78bfa;
-      --accent2: #c4b5fd;
-      --text: #e2e8f0;
-      --text-muted: #94a3b8;
-      --user-bubble: #1e1b4b;
-      --alex-bubble: #130f2a;
-      --glow: rgba(167, 139, 250, 0.3);
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* ─── САЙДБАР С АВАТАРОМ ─────────────────────────────── */
-
-    .sidebar {
-      width: 280px;
-      min-width: 280px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 24px 32px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .sidebar::before {
-      content: '';
-      position: absolute;
-      top: -80px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(167,139,250,0.12) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .avatar-wrapper {
-      position: relative;
-      margin-bottom: 24px;
-    }
-
-    .avatar-ring {
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      background: linear-gradient(135deg, var(--accent), #ec4899, var(--accent)) border-box;
-      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: destination-out;
-      mask-composite: exclude;
-      animation: ring-spin 6s linear infinite;
-    }
-
-    @keyframes ring-spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .avatar-ring-2 {
-      position: absolute;
-      inset: -16px;
-      border-radius: 50%;
-      border: 1px solid rgba(167, 139, 250, 0.2);
-      animation: ring-pulse 3s ease-in-out infinite;
-    }
-
-    @keyframes ring-pulse {
-      0%, 100% { transform: scale(1); opacity: 0.3; }
-      50% { transform: scale(1.05); opacity: 0.6; }
-    }
-
-    /* ─── SVG АВАТАР ─────────────────────────────────────── */
-
-    .avatar-svg {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      position: relative;
-      z-index: 1;
-      animation: breathe 4s ease-in-out infinite;
-      filter: drop-shadow(0 0 20px rgba(167,139,250,0.4));
-    }
-
-    @keyframes breathe {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-
-    /* Моргание */
-    .eye-left, .eye-right { animation: blink 4s ease-in-out infinite; }
-    .eye-right { animation-delay: 0.08s; }
-
-    @keyframes blink {
-      0%, 90%, 100% { transform: scaleY(1); }
-      95% { transform: scaleY(0.05); }
-    }
-
-    .name-badge {
-      text-align: center;
-    }
-
-    .name-badge h2 {
-      font-size: 22px;
-      font-weight: 600;
-      background: linear-gradient(135deg, var(--accent2), #ec4899);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 0.5px;
-    }
-
-    .name-badge .role {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 4px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .status-dot {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      font-size: 12px;
-      color: #4ade80;
-    }
-
-    .status-dot::before {
-      content: '';
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #4ade80;
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
-      50% { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
-    }
-
-    .divider {
-      width: 100%;
-      height: 1px;
-      background: var(--border);
-      margin: 28px 0;
-    }
-
-    .capabilities {
-      width: 100%;
-    }
-
-    .capabilities h3 {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .cap-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-      transition: background 0.2s;
-    }
-
-    .cap-item:hover { background: var(--surface2); color: var(--text); }
-
-    .cap-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      background: var(--surface2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    /* ─── ПЕРЕКЛЮЧАТЕЛЬ ПРОЕКТА ─────────────────────────── */
-
-    .project-switcher {
-      width: 100%;
-      margin-bottom: 4px;
-    }
-
-    .project-switcher h3 {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .project-btns {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .proj-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 12px;
-      border-radius: 9px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-family: inherit;
-      font-weight: 500;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.15s;
-      width: 100%;
-    }
-
-    .proj-btn:hover { background: var(--surface2); color: var(--text); }
-
-    .proj-btn.active {
-      background: rgba(167,139,250,0.1);
-      border-color: rgba(167,139,250,0.25);
-      color: var(--accent2);
-    }
-
-    .proj-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .proj-dot.varvara { background: #a78bfa; }
-    .proj-dot.hvostiki { background: #fb923c; }
-
-    /* ─── ФИЛЬТР ЗАДАЧ ───────────────────────────────────── */
-
-    .backlog-filter {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .filter-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 12px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.15s;
-    }
-
-    .filter-btn:hover { color: var(--text); }
-    .filter-btn.active {
-      background: rgba(167,139,250,0.12);
-      border-color: rgba(167,139,250,0.35);
-      color: var(--accent2);
-    }
-
-    .sidebar-footer {
-      margin-top: auto;
-      font-size: 11px;
-      color: rgba(148,163,184,0.4);
-      text-align: center;
-    }
-
-    /* ─── ОСНОВНОЙ ЧАТ ───────────────────────────────────── */
-
-    .chat-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .chat-header {
-      padding: 20px 28px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--surface);
-    }
-
-    .chat-header-left h1 {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .chat-header-left p {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 2px;
-    }
-
-    .clear-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 12px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-
-    .clear-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      scroll-behavior: smooth;
-    }
-
-    .messages::-webkit-scrollbar { width: 4px; }
-    .messages::-webkit-scrollbar-track { background: transparent; }
-    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    /* Вступительное сообщение */
-    .welcome {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-    }
-
-    .welcome .welcome-icon {
-      font-size: 40px;
-      margin-bottom: 16px;
-    }
-
-    .welcome h2 {
-      font-size: 20px;
-      color: var(--text);
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .welcome p {
-      font-size: 14px;
-      line-height: 1.6;
-      max-width: 400px;
-      margin: 0 auto 24px;
-    }
-
-    .suggestion-chips {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .chip {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 12px;
-      padding: 7px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s;
-    }
-
-    .chip:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: rgba(167, 139, 250, 0.08);
-    }
-
-    /* Пузыри сообщений */
-    .message {
-      display: flex;
-      gap: 12px;
-      animation: msg-in 0.3s ease;
-    }
-
-    @keyframes msg-in {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.user { flex-direction: row-reverse; }
-
-    .msg-avatar {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 2px;
-    }
-
-    .message.assistant .msg-avatar {
-      background: linear-gradient(135deg, #7c3aed, #ec4899);
-      font-size: 16px;
-    }
-
-    .message.user .msg-avatar {
-      background: linear-gradient(135deg, #1e40af, #3b82f6);
-      color: white;
-      font-size: 13px;
-    }
-
-    .bubble {
-      max-width: 68%;
-      padding: 13px 16px;
-      border-radius: 14px;
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .message.user .bubble {
-      background: var(--user-bubble);
-      border: 1px solid rgba(99,102,241,0.2);
-      border-bottom-right-radius: 4px;
-    }
-
-    .message.assistant .bubble {
-      background: var(--alex-bubble);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-    }
-
-    .bubble strong { color: var(--accent2); }
-
-    .bubble p { margin-bottom: 8px; }
-    .bubble p:last-child { margin-bottom: 0; }
-
-    .bubble ol, .bubble ul {
-      margin-left: 18px;
-      margin-top: 6px;
-      margin-bottom: 8px;
-    }
-
-    .bubble li { margin-bottom: 4px; }
-
-    /* Индикатор печатания */
-    .typing-indicator {
-      display: none;
-      gap: 12px;
-      align-items: flex-start;
-      animation: msg-in 0.3s ease;
-    }
-
-    .typing-indicator.visible { display: flex; }
-
-    .typing-dots {
-      background: var(--alex-bubble);
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-      border-radius: 14px;
-      padding: 14px 18px;
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
-
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: dot-bounce 1.2s ease-in-out infinite;
-    }
-
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes dot-bounce {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-      30% { transform: translateY(-6px); opacity: 1; }
-    }
-
-    /* ─── ВКЛАДКИ ───────────────────────────────────────── */
-
-    .tabs {
-      display: flex;
-      gap: 4px;
-      padding: 0 28px;
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-family: inherit;
-      font-weight: 500;
-      padding: 14px 16px 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      transition: color 0.2s;
-      position: relative;
-      top: 1px;
-    }
-
-    .tab-btn:hover { color: var(--text); }
-
-    .tab-btn.active {
-      color: var(--accent2);
-      border-bottom-color: var(--accent);
-    }
-
-    .tab-badge {
-      background: var(--accent);
-      color: #1a0040;
-      font-size: 10px;
-      font-weight: 700;
-      min-width: 18px;
-      height: 18px;
-      border-radius: 9px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 5px;
-    }
-
-    .tab-panel { display: none; flex: 1; flex-direction: column; overflow: hidden; }
-    .tab-panel.active { display: flex; }
-
-    /* ─── БЭКЛОГ ─────────────────────────────────────────── */
-
-    .backlog-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .backlog-area::-webkit-scrollbar { width: 4px; }
-    .backlog-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    .backlog-input-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
-
-    .backlog-input-row input {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .backlog-input-row input:focus { border-color: rgba(167,139,250,0.5); }
-    .backlog-input-row input::placeholder { color: var(--text-muted); }
-
-    .backlog-tag-select {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      color: var(--text-muted);
-      font-size: 13px;
-      font-family: inherit;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .backlog-add-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #7c3aed, #a855f7);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      color: white;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-
-    .backlog-add-btn:hover { transform: scale(1.05); }
-
-    .backlog-section-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      margin-top: 4px;
-    }
-
-    .backlog-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 13px 14px;
-      border-radius: 10px;
-      margin-bottom: 6px;
-      background: var(--surface2);
-      border: 1px solid transparent;
-      transition: border-color 0.2s, opacity 0.2s;
-      animation: msg-in 0.25s ease;
-    }
-
-    .backlog-item:hover { border-color: var(--border); }
-    .backlog-item.done { opacity: 0.45; }
-
-    .backlog-check {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      flex-shrink: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 1px;
-      transition: all 0.2s;
-    }
-
-    .backlog-check:hover { border-color: var(--accent); }
-    .backlog-item.done .backlog-check {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-    .backlog-item.done .backlog-check::after { content: '✓'; font-size: 11px; color: white; }
-
-    .backlog-body { flex: 1; min-width: 0; }
-
-    .backlog-text {
-      font-size: 14px;
-      color: var(--text);
-      line-height: 1.5;
-    }
-
-    .backlog-item.done .backlog-text {
-      text-decoration: line-through;
-      color: var(--text-muted);
-    }
-
-    .backlog-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 5px;
-    }
-
-    .backlog-tag {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: rgba(167,139,250,0.12);
-      color: var(--accent2);
-      border: 1px solid rgba(167,139,250,0.2);
-    }
-
-    .backlog-date {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .backlog-del {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 16px;
-      cursor: pointer;
-      padding: 2px 4px;
-      border-radius: 4px;
-      opacity: 0;
-      transition: opacity 0.2s, color 0.2s;
-      flex-shrink: 0;
-    }
-
-    .backlog-item:hover .backlog-del { opacity: 1; }
-    .backlog-del:hover { color: #f87171; }
-
-    .backlog-empty {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text-muted);
-    }
-
-    .backlog-empty .empty-icon { font-size: 40px; margin-bottom: 12px; }
-    .backlog-empty p { font-size: 14px; }
-
-    .done-divider {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      margin: 16px 0 10px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .done-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* ─── ПОЛЕ ВВОДА ─────────────────────────────────────── */
-
-    .input-area {
-      padding: 16px 28px 24px;
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .input-wrapper {
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 10px 10px 10px 16px;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .input-wrapper:focus-within {
-      border-color: rgba(167, 139, 250, 0.5);
-      box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.08);
-    }
-
-    #input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-size: 14px;
-      font-family: inherit;
-      line-height: 1.5;
-      resize: none;
-      max-height: 120px;
-      overflow-y: auto;
-    }
-
-    #input::placeholder { color: var(--text-muted); }
-
-    #input::-webkit-scrollbar { width: 3px; }
-    #input::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    .send-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #7c3aed, #a855f7);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      box-shadow: 0 2px 8px rgba(124,58,237,0.3);
-    }
-
-    .send-btn:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(124,58,237,0.5); }
-    .send-btn:active { transform: scale(0.97); }
-    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-    .send-btn svg { color: white; }
-
-    .input-hint {
-      font-size: 11px;
-      color: rgba(148,163,184,0.4);
-      margin-top: 8px;
-      text-align: center;
-    }
-
-    /* ─── MARKDOWN ────────────────────────────────────────── */
-
-    .bubble code {
-      background: rgba(167,139,250,0.15);
-      padding: 1px 6px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-family: 'SF Mono', monospace;
-      color: var(--accent2);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Варвара</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-app: #0d0d1a; --bg-sidebar: #11111e; --bg-main: #0f0f1c;
+  --bg-card: #1a1a2e; --bg-input: #1c1c30; --bg-hover: #1e1e35;
+  --accent: #7c3aed; --accent-hover: #6d28d9; --accent-light: #a78bfa;
+  --accent-dim: rgba(124,58,237,0.15);
+  --text-primary: #e8e5ff; --text-secondary: #8b88b8; --text-muted: #4e4c6a;
+  --border: #1f1f38; --border-hover: #2e2e50;
+  --success: #10b981; --danger: #ef4444; --scrollbar: #2a2a45;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg-app);color:var(--text-primary);font-size:14px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--scrollbar);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#3a3a60}
+.app{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:220px;min-width:220px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:0 16px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar-logo .logo-icon{font-size:20px}
+.sidebar-logo .logo-text{font-size:16px;font-weight:700;color:var(--accent-light);letter-spacing:.5px}
+.sidebar-section-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);padding:0 16px 8px}
+.projects-list{flex:1;overflow-y:auto;padding:0 8px}
+.project-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:background .15s;color:var(--text-secondary);margin-bottom:2px}
+.project-item:hover{background:var(--bg-hover);color:var(--text-primary)}
+.project-item.active{background:var(--accent-dim);color:var(--text-primary)}
+.project-item-icon{font-size:16px;flex-shrink:0}
+.project-item-name{font-size:13px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sidebar-hidden-toggle{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;color:var(--text-muted);font-size:12px;transition:color .15s;margin:0 8px}
+.sidebar-hidden-toggle:hover{color:var(--text-secondary)}
+.sidebar-footer{padding:12px 8px 0;border-top:1px solid var(--border);margin-top:8px}
+.btn-add-project{display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;border:1px dashed var(--border-hover);border-radius:8px;background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;transition:all .15s}
+.btn-add-project:hover{border-color:var(--accent);color:var(--accent-light);background:var(--accent-dim)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg-main)}
+.project-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);min-height:60px;flex-shrink:0}
+.project-title{display:flex;align-items:center;gap:10px}
+.project-title-icon{font-size:20px}
+.project-title-name{font-size:16px;font-weight:700}
+.tabs{display:flex;gap:4px}
+.tab{padding:7px 16px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.tab:hover{color:var(--text-primary);background:var(--bg-hover)}
+.tab.active{background:var(--accent-dim);color:var(--accent-light);border-color:rgba(124,58,237,.3)}
+.tab-content{display:none;flex:1;overflow:hidden}
+.tab-content.active{display:flex;flex-direction:column}
+
+/* EMPTY STATE */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-muted);gap:12px}
+.empty-state-icon{font-size:48px;opacity:.3}
+.empty-state-text{font-size:14px}
+
+/* CHAT */
+.chat-messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px}
+.message{display:flex;gap:12px;max-width:85%}
+.message.user{flex-direction:row-reverse;align-self:flex-end}
+.message.assistant{align-self:flex-start}
+.message-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
+.message.user .message-avatar{background:var(--accent)}
+.message.assistant .message-avatar{background:var(--bg-card);border:1px solid var(--border-hover)}
+.message-bubble{padding:12px 16px;border-radius:12px;line-height:1.6;font-size:14px}
+.message.user .message-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.message.assistant .message-bubble{background:var(--bg-card);color:var(--text-primary);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.message.assistant .message-bubble p{margin:0 0 8px}
+.message.assistant .message-bubble p:last-child{margin:0}
+.message.assistant .message-bubble strong{color:var(--accent-light)}
+.message.assistant .message-bubble code{background:var(--bg-input);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px}
+.message.assistant .message-bubble pre{background:var(--bg-input);padding:12px;border-radius:8px;overflow-x:auto;margin:8px 0}
+.message.assistant .message-bubble ul,.message.assistant .message-bubble ol{padding-left:20px}
+.message.assistant .message-bubble li{margin:4px 0}
+.message.assistant .message-bubble table{border-collapse:collapse;width:100%;margin:8px 0;font-size:13px}
+.message.assistant .message-bubble th,.message.assistant .message-bubble td{border:1px solid var(--border-hover);padding:6px 10px}
+.message.assistant .message-bubble th{background:var(--bg-input);color:var(--accent-light)}
+.message.assistant .message-bubble h1,.message.assistant .message-bubble h2,.message.assistant .message-bubble h3{color:var(--accent-light);margin:12px 0 6px}
+.thinking-indicator{display:flex;align-items:center;gap:10px;color:var(--text-muted);font-size:13px;align-self:flex-start}
+.thinking-dots{display:flex;gap:4px}
+.thinking-dots span{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:bounce 1.2s infinite;opacity:.6}
+.thinking-dots span:nth-child(2){animation-delay:.2s}
+.thinking-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px);opacity:1}}
+.task-created-notice{display:flex;align-items:center;gap:8px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#10b981;margin-top:4px;align-self:flex-start;max-width:85%}
+.chat-input-area{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:12px;align-items:flex-end;flex-shrink:0}
+#chatInput{flex:1;background:var(--bg-input);border:1px solid var(--border-hover);border-radius:12px;padding:12px 16px;color:var(--text-primary);font-size:14px;resize:none;max-height:150px;min-height:46px;font-family:inherit;line-height:1.5;outline:none;transition:border-color .15s}
+#chatInput:focus{border-color:var(--accent)}
+#chatInput::placeholder{color:var(--text-muted)}
+.btn-send{width:46px;height:46px;border-radius:12px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;color:#fff}
+.btn-send:hover{background:var(--accent-hover)}
+.btn-send:disabled{opacity:.5;cursor:not-allowed}
+.btn-send svg{width:18px;height:18px}
+
+/* KANBAN */
+.kanban-wrapper{flex:1;overflow:hidden;display:flex;flex-direction:column}
+.kanban-toolbar{display:flex;align-items:center;justify-content:flex-end;padding:14px 24px 10px;gap:8px;flex-shrink:0}
+.btn-primary{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:500;cursor:pointer;transition:background .15s}
+.btn-primary:hover{background:var(--accent-hover)}
+.kanban-board{flex:1;overflow-x:auto;overflow-y:hidden;padding:0 24px 24px;display:flex;gap:12px;align-items:flex-start}
+.kanban-column{min-width:250px;max-width:250px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;display:flex;flex-direction:column;max-height:calc(100vh - 178px)}
+.column-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.column-title{font-size:11px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px}
+.column-count{font-size:11px;color:var(--text-muted);background:var(--bg-input);border-radius:10px;padding:1px 7px;min-width:20px;text-align:center}
+.column-cards{flex:1;overflow-y:auto;padding:10px 10px 6px;display:flex;flex-direction:column;gap:8px}
+.task-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;transition:border-color .15s,box-shadow .15s}
+.task-card:hover{border-color:var(--border-hover);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.task-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.task-card-title{font-size:13px;line-height:1.5;color:var(--text-primary);flex:1;cursor:text;word-break:break-word}
+.task-card-title:focus{outline:1px solid var(--accent);border-radius:4px;padding:2px 4px}
+.task-card-delete{width:20px;height:20px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:color .15s,background .15s;opacity:0}
+.task-card:hover .task-card-delete{opacity:1}
+.task-card-delete:hover{color:var(--danger);background:rgba(239,68,68,.1)}
+.task-card-agent{display:inline-block;font-size:11px;color:var(--accent-light);background:var(--accent-dim);border-radius:4px;padding:2px 7px;margin-top:6px}
+.task-card-agent:empty{display:none}
+.task-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.task-card-date{font-size:11px;color:var(--text-muted)}
+.task-card-nav{display:flex;gap:4px}
+.task-nav-btn{width:24px;height:24px;border:1px solid var(--border-hover);background:transparent;border-radius:5px;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .15s}
+.task-nav-btn:hover{border-color:var(--accent);color:var(--accent-light);background:var(--accent-dim)}
+.task-nav-btn:disabled{opacity:.2;cursor:not-allowed}
+.column-add-form{padding:0 10px 10px;flex-shrink:0}
+.column-add-btn{width:100%;padding:8px;border:1px dashed var(--border);border-radius:7px;background:transparent;color:var(--text-muted);font-size:12px;cursor:pointer;transition:all .15s;text-align:left}
+.column-add-btn:hover{border-color:var(--accent);color:var(--accent-light);background:var(--accent-dim)}
+.column-add-input-wrap{display:none}
+.column-add-input-wrap.visible{display:flex;flex-direction:column;gap:6px}
+.column-add-input{width:100%;background:var(--bg-input);border:1px solid var(--accent);border-radius:7px;padding:8px 10px;color:var(--text-primary);font-size:13px;font-family:inherit;resize:none;outline:none}
+.column-add-actions{display:flex;gap:6px}
+.btn-save-task{flex:1;padding:6px;background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:12px;cursor:pointer}
+.btn-save-task:hover{background:var(--accent-hover)}
+.btn-cancel-task{padding:6px 10px;background:transparent;border:1px solid var(--border-hover);border-radius:6px;color:var(--text-muted);font-size:12px;cursor:pointer}
+.btn-cancel-task:hover{color:var(--text-primary)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
+.modal-overlay.hidden{display:none}
+.modal{background:var(--bg-card);border:1px solid var(--border-hover);border-radius:14px;padding:24px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:20px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;color:var(--text-secondary);margin-bottom:6px}
+.modal-field input{width:100%;background:var(--bg-input);border:1px solid var(--border-hover);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+.modal-field input:focus{border-color:var(--accent)}
+.modal-icons{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.icon-option{width:38px;height:38px;border-radius:8px;border:2px solid var(--border);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.icon-option:hover{border-color:var(--accent);background:var(--accent-dim)}
+.icon-option.selected{border-color:var(--accent);background:var(--accent-dim)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+.btn-modal-cancel{padding:9px 16px;background:transparent;border:1px solid var(--border-hover);border-radius:8px;color:var(--text-secondary);font-size:13px;cursor:pointer}
+.btn-modal-cancel:hover{color:var(--text-primary)}
+.btn-modal-create{padding:9px 16px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:500;cursor:pointer}
+.btn-modal-create:hover{background:var(--accent-hover)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg-card);border:1px solid var(--border-hover);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text-primary);box-shadow:0 8px 24px rgba(0,0,0,.4);transform:translateY(80px);opacity:0;transition:all .3s;z-index:200;pointer-events:none;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(16,185,129,.4);color:#10b981}
+.toast.error{border-color:rgba(239,68,68,.4);color:#ef4444}
+</style>
 </head>
 <body>
-
-  <!-- САЙДБАР -->
+<div class="app">
   <aside class="sidebar">
-    <div class="avatar-wrapper">
-      <div class="avatar-ring-2"></div>
-      <div class="avatar-ring"></div>
-
-      <!-- SVG Аватар Варвары -->
-      <svg class="avatar-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="skinGrad" cx="50%" cy="40%" r="55%">
-            <stop offset="0%" stop-color="#fde3c8"/>
-            <stop offset="100%" stop-color="#f4c09a"/>
-          </radialGradient>
-          <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#1e1040"/>
-            <stop offset="100%" stop-color="#0d0820"/>
-          </radialGradient>
-          <radialGradient id="hairGrad" cx="50%" cy="0%" r="80%">
-            <stop offset="0%" stop-color="#4a2060"/>
-            <stop offset="100%" stop-color="#1a0a30"/>
-          </radialGradient>
-          <radialGradient id="cheekGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="rgba(236,72,153,0.35)"/>
-            <stop offset="100%" stop-color="rgba(236,72,153,0)"/>
-          </radialGradient>
-          <clipPath id="circleClip">
-            <circle cx="100" cy="100" r="100"/>
-          </clipPath>
-          <filter id="softGlow">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-          </filter>
-        </defs>
-
-        <g clip-path="url(#circleClip)">
-          <!-- Фон -->
-          <circle cx="100" cy="100" r="100" fill="url(#bgGrad)"/>
-
-          <!-- Шея -->
-          <rect x="82" y="138" width="36" height="28" rx="8" fill="url(#skinGrad)"/>
-
-          <!-- Плечи / одежда -->
-          <ellipse cx="100" cy="195" rx="68" ry="42" fill="#2d1b69"/>
-          <ellipse cx="100" cy="188" rx="56" ry="28" fill="#3b2082"/>
-
-          <!-- Волосы (задние) -->
-          <ellipse cx="100" cy="80" rx="58" ry="66" fill="url(#hairGrad)"/>
-          <path d="M42,80 Q30,130 38,175 L52,165 Q46,130 54,90 Z" fill="#1a0a30"/>
-          <path d="M158,80 Q170,130 162,175 L148,165 Q154,130 146,90 Z" fill="#1a0a30"/>
-
-          <!-- Лицо -->
-          <ellipse cx="100" cy="100" rx="48" ry="55" fill="url(#skinGrad)"/>
-
-          <!-- Брови -->
-          <path d="M70,72 Q82,66 88,70" stroke="#5a3020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <path d="M112,70 Q118,66 130,72" stroke="#5a3020" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-
-          <!-- Глаза -->
-          <g class="eye-left" transform-origin="79 90">
-            <ellipse cx="79" cy="90" rx="10" ry="11" fill="white"/>
-            <ellipse cx="79" cy="91" rx="7" ry="7.5" fill="#4a1a6a"/>
-            <ellipse cx="79" cy="91" rx="4.5" ry="4.5" fill="#1a0030"/>
-            <ellipse cx="76" cy="88" rx="1.8" ry="1.8" fill="white" opacity="0.9"/>
-            <ellipse cx="82" cy="93" rx="0.8" ry="0.8" fill="white" opacity="0.5"/>
-            <!-- Ресницы -->
-            <path d="M69,83 Q70,78 72,80" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <path d="M74,80 Q75,75 77,78" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <path d="M79,79 Q80,74 82,77" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <path d="M84,80 Q86,76 88,79" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-          </g>
-
-          <g class="eye-right" transform-origin="121 90">
-            <ellipse cx="121" cy="90" rx="10" ry="11" fill="white"/>
-            <ellipse cx="121" cy="91" rx="7" ry="7.5" fill="#4a1a6a"/>
-            <ellipse cx="121" cy="91" rx="4.5" ry="4.5" fill="#1a0030"/>
-            <ellipse cx="118" cy="88" rx="1.8" ry="1.8" fill="white" opacity="0.9"/>
-            <ellipse cx="124" cy="93" rx="0.8" ry="0.8" fill="white" opacity="0.5"/>
-            <!-- Ресницы -->
-            <path d="M111,83 Q112,78 114,80" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <path d="M116,80 Q117,75 119,78" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <path d="M121,79 Q122,74 124,77" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-            <path d="M126,80 Q128,76 130,79" stroke="#2d0a40" stroke-width="1.2" fill="none" stroke-linecap="round"/>
-          </g>
-
-          <!-- Нос -->
-          <path d="M100,95 Q97,108 94,114 Q100,117 106,114 Q103,108 100,95" fill="rgba(180,100,60,0.25)" stroke="rgba(160,80,40,0.3)" stroke-width="0.5"/>
-
-          <!-- Румянец -->
-          <ellipse cx="68" cy="108" rx="13" ry="9" fill="url(#cheekGrad)"/>
-          <ellipse cx="132" cy="108" rx="13" ry="9" fill="url(#cheekGrad)"/>
-
-          <!-- Губы -->
-          <path d="M88,122 Q94,118 100,120 Q106,118 112,122" stroke="#c0536a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-          <path d="M88,122 Q94,128 100,126 Q106,128 112,122" fill="#e07090" opacity="0.85"/>
-          <path d="M88,122 Q100,120 112,122 Q106,118 100,117 Q94,118 88,122 Z" fill="#f48fb1" opacity="0.7"/>
-          <!-- Блик на губах -->
-          <ellipse cx="97" cy="121" rx="5" ry="1.5" fill="rgba(255,255,255,0.3)" transform="rotate(-5,97,121)"/>
-
-          <!-- Серьги -->
-          <circle cx="52" cy="105" r="4" fill="#a855f7" filter="url(#softGlow)"/>
-          <circle cx="52" cy="105" r="2" fill="#c084fc"/>
-          <circle cx="148" cy="105" r="4" fill="#a855f7" filter="url(#softGlow)"/>
-          <circle cx="148" cy="105" r="2" fill="#c084fc"/>
-
-          <!-- Волосы (передние) -->
-          <path d="M52,80 Q50,55 65,42 Q80,30 100,28 Q120,30 135,42 Q150,55 148,80 Q130,65 100,63 Q70,65 52,80 Z" fill="url(#hairGrad)"/>
-          <!-- Прядь -->
-          <path d="M52,80 Q48,100 55,130 Q60,90 65,75 Z" fill="#2a1050"/>
-          <!-- Блик на волосах -->
-          <path d="M70,35 Q90,28 110,32" stroke="rgba(167,139,250,0.25)" stroke-width="3" fill="none" stroke-linecap="round"/>
-        </g>
-
-        <!-- Внешнее свечение -->
-        <circle cx="100" cy="100" r="99" fill="none" stroke="rgba(167,139,250,0.15)" stroke-width="2"/>
-      </svg>
+    <div class="sidebar-logo">
+      <span class="logo-icon">⚡</span>
+      <span class="logo-text">Варвара</span>
     </div>
-
-    <div class="name-badge">
-      <h2>Варвара</h2>
-      <div class="role">CPO Советник</div>
-      <div class="status-dot">Онлайн</div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="project-switcher">
-      <h3>Проект</h3>
-      <div class="project-btns">
-        <button class="proj-btn active" id="projVarvara" onclick="switchProject('varvara')">
-          <span class="proj-dot varvara"></span>
-          Варвара
-        </button>
-        <button class="proj-btn" id="projHvostiki" onclick="switchProject('hvostiki')">
-          <span class="proj-dot hvostiki"></span>
-          Хвостики
-        </button>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="capabilities">
-      <h3>Специализация</h3>
-      <div class="cap-item">
-        <div class="cap-icon">📊</div>
-        Стратегия и портфель
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">💰</div>
-        Допродажи и маржа
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">👥</div>
-        Команда и PM-ы
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">📈</div>
-        Личный рост CPO
-      </div>
-      <div class="cap-item">
-        <div class="cap-icon">🤝</div>
-        Переговоры с клиентами
-      </div>
-    </div>
-
+    <div class="sidebar-section-label">Проекты</div>
+    <div class="projects-list" id="projectsList"></div>
     <div class="sidebar-footer">
-      Beetrail · CPO Assistant v1
+      <button class="btn-add-project" onclick="openAddProjectModal()"><span>+</span> Новый проект</button>
     </div>
   </aside>
-
-  <!-- ОСНОВНАЯ ОБЛАСТЬ -->
-  <main class="chat-area">
-    <div class="chat-header">
-      <div class="chat-header-left">
-        <h1 id="headerTitle">Чат с Варварой</h1>
-        <p id="headerSub">Твой персональный CPO-советник</p>
+  <main class="main">
+    <div class="project-header">
+      <div class="project-title">
+        <span class="project-title-icon" id="headerIcon">⚡</span>
+        <span class="project-title-name" id="headerName">Выберите проект</span>
       </div>
-      <button class="clear-btn" id="headerAction" onclick="clearChat()">Очистить чат</button>
+      <div class="tabs">
+        <button class="tab active" id="tabBtnChat" onclick="switchTab('chat')">Чат</button>
+        <button class="tab" id="tabBtnTasks" onclick="switchTab('tasks')">Задачи</button>
+      </div>
     </div>
-
-    <!-- ВКЛАДКИ -->
-    <div class="tabs">
-      <button class="tab-btn active" id="tabChat" onclick="switchTab('chat')">
-        💬 Чат
-      </button>
-      <button class="tab-btn" id="tabBacklog" onclick="switchTab('backlog')">
-        📋 Задачи
-        <span class="tab-badge" id="backlogBadge" style="display:none">0</span>
-      </button>
-    </div>
-
-    <!-- ПАНЕЛЬ ЧАТА -->
-    <div class="tab-panel active" id="panelChat">
-      <div class="messages" id="messages">
-        <div class="welcome" id="welcome">
-          <div class="welcome-icon">✨</div>
-          <h2>Привет, Никита</h2>
-          <p>Готова разобраться с любым вопросом по стратегии, клиентам, команде или твоему росту как CPO.</p>
-          <div class="suggestion-chips">
-            <button class="chip" onclick="sendChip(this)">Как закрыть постпроектную поддержку?</button>
-            <button class="chip" onclick="sendChip(this)">Как перейти на уровень CPO 2?</button>
-            <button class="chip" onclick="sendChip(this)">Оцени мой портфель клиентов</button>
-            <button class="chip" onclick="sendChip(this)">Как увеличить маржинальность?</button>
-            <button class="chip" onclick="sendChip(this)">Что делать с клиентом на T&M?</button>
-          </div>
-        </div>
+    <div class="tab-content active" id="tabChat">
+      <div class="chat-messages" id="chatMessages">
+        <div class="empty-state"><div class="empty-state-icon">💬</div><div class="empty-state-text">Выберите проект слева</div></div>
       </div>
-
-      <div class="typing-indicator" id="typing">
-        <div class="msg-avatar">✦</div>
-        <div class="typing-dots">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <span id="thinkingTimer" style="margin-left:8px;font-size:11px;color:var(--text-muted);font-family:inherit;"></span>
-        </div>
-      </div>
-
-      <div class="input-area">
-      <div class="input-wrapper">
-        <textarea
-          id="input"
-          rows="1"
-          placeholder="Спроси Варвару о стратегии, клиентах, команде..."
-          onkeydown="handleKey(event)"
-          oninput="autoResize(this)"
-        ></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      <div class="chat-input-area">
+        <textarea id="chatInput" placeholder="Написать Варваре..." rows="1"
+          onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="btn-send" id="btnSend" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
           </svg>
         </button>
       </div>
-      <div class="input-hint">Enter — отправить · Shift+Enter — новая строка</div>
     </div>
-    </div><!-- /panelChat -->
-
-    <!-- ПАНЕЛЬ БЭКЛОГА -->
-    <div class="tab-panel" id="panelBacklog">
-      <div class="backlog-area">
-        <div class="backlog-filter">
-          <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">Все</button>
-          <button class="filter-btn" id="filterVarvara" onclick="setFilter('Варвара')">🔮 Варвара</button>
-          <button class="filter-btn" id="filterHvostiki" onclick="setFilter('Хвостики')">🐾 Хвостики</button>
+    <div class="tab-content" id="tabTasks">
+      <div class="kanban-wrapper">
+        <div class="kanban-toolbar">
+          <button class="btn-primary" onclick="showAddTaskPanel()">+ Задача</button>
         </div>
-        <div class="backlog-input-row">
-          <input type="text" id="backlogInput" placeholder="Добавить задачу на будущее..." onkeydown="if(event.key==='Enter') addBacklogItem()">
-          <select class="backlog-tag-select" id="backlogTag">
-            <option value="Варвара">🔮 Варвара</option>
-            <option value="Хвостики">🐾 Хвостики</option>
-            <option value="">Без проекта</option>
-            <option value="Агенты">Агенты</option>
-            <option value="Обучение">Обучение</option>
-            <option value="CPO">CPO</option>
-            <option value="Идея">Идея</option>
-          </select>
-          <button class="backlog-add-btn" onclick="addBacklogItem()">+</button>
-        </div>
-        <div id="backlogList"></div>
-      </div>
-    </div><!-- /panelBacklog -->
-
-  </main>
-
-  <script>
-    const messagesEl = document.getElementById('messages');
-    const inputEl = document.getElementById('input');
-    const sendBtn = document.getElementById('sendBtn');
-    const typingEl = document.getElementById('typing');
-    const welcomeEl = document.getElementById('welcome');
-
-    let history = [];
-    let isLoading = false;
-    let currentProject = 'varvara';
-    let backlogFilter = 'all';
-
-    const PROJECT_LABELS = {
-      varvara: { name: 'Варвара', sub: 'CPO-помощник · Beetrail', icon: '🔮' },
-      hvostiki: { name: 'Хвостики', sub: 'Собственный продукт · Дневник питомцев', icon: '🐾' },
-    };
-
-    function switchProject(project) {
-      currentProject = project;
-      history = []; // сбрасываем историю при смене проекта
-
-      // Обновляем кнопки сайдбара
-      document.getElementById('projVarvara').classList.toggle('active', project === 'varvara');
-      document.getElementById('projHvostiki').classList.toggle('active', project === 'hvostiki');
-
-      // Обновляем заголовок если в режиме чата
-      const label = PROJECT_LABELS[project];
-      if (document.getElementById('panelChat').classList.contains('active')) {
-        document.getElementById('headerTitle').textContent = 'Чат с Варварой';
-        document.getElementById('headerSub').textContent = label.icon + ' ' + label.sub;
-      }
-
-      // Сбрасываем чат
-      const msgs = messagesEl.querySelectorAll('.message');
-      msgs.forEach(m => m.remove());
-      if (welcomeEl) {
-        welcomeEl.style.display = 'block';
-        welcomeEl.querySelector('p').textContent =
-          project === 'hvostiki'
-            ? 'Режим проекта Хвостики. Спрашивай про продукт, фичи, вайб-кодинг, приоритеты.'
-            : 'Готова разобраться с любым вопросом по стратегии, клиентам, команде или твоему росту как CPO.';
-      }
-      inputEl.focus();
-    }
-
-    function autoResize(el) {
-      el.style.height = 'auto';
-      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-    }
-
-    function handleKey(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    }
-
-    function sendChip(btn) {
-      inputEl.value = btn.textContent;
-      sendMessage();
-    }
-
-    function scrollToBottom() {
-      messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
-    }
-
-    function addMessage(role, text) {
-      const isUser = role === 'user';
-      const div = document.createElement('div');
-      div.className = `message ${role}`;
-
-      const avatarDiv = document.createElement('div');
-      avatarDiv.className = 'msg-avatar';
-      avatarDiv.textContent = isUser ? 'Н' : '✦';
-
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.innerHTML = formatMarkdown(text);
-
-      div.appendChild(avatarDiv);
-      div.appendChild(bubble);
-      messagesEl.appendChild(div);
-      scrollToBottom();
-      return bubble;
-    }
-
-    function formatMarkdown(text) {
-      return text
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/`(.+?)`/g, '<code>$1</code>')
-        .replace(/^(\d+\.\s)/gm, '<br>$1')
-        .replace(/\n\n/g, '</p><p>')
-        .replace(/\n/g, '<br>')
-        .replace(/^/, '<p>')
-        .replace(/$/, '</p>');
-    }
-
-    async function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text || isLoading) return;
-
-      if (welcomeEl) welcomeEl.style.display = 'none';
-
-      inputEl.value = '';
-      inputEl.style.height = 'auto';
-      isLoading = true;
-      sendBtn.disabled = true;
-
-      addMessage('user', text);
-      history.push({ role: 'user', content: text });
-
-      typingEl.classList.add('visible');
-      messagesEl.appendChild(typingEl);
-      scrollToBottom();
-
-      // Метка времени в индикаторе
-      const timerEl = document.getElementById('thinkingTimer');
-
-      try {
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text, history: history.slice(-10), project: currentProject }),
-        });
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let sseBuffer = '';
-
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-
-          sseBuffer += decoder.decode(value, { stream: true });
-          const lines = sseBuffer.split('\n');
-          sseBuffer = lines.pop();
-
-          for (const line of lines) {
-            if (!line.startsWith('data: ')) continue;
-            try {
-              const event = JSON.parse(line.slice(6));
-
-              // Обновляем таймер пока думает
-              if (event.thinking && timerEl) {
-                timerEl.textContent = `${event.thinking}с`;
-              }
-
-              if (event.error) {
-                typingEl.classList.remove('visible');
-                if (timerEl) timerEl.textContent = '';
-                addMessage('assistant', '⚠️ Ошибка: ' + event.error);
-              }
-
-              if (event.text) {
-                typingEl.classList.remove('visible');
-                if (timerEl) timerEl.textContent = '';
-                addMessage('assistant', event.text);
-                history.push({ role: 'assistant', content: event.text });
-              }
-            } catch (_) {}
-          }
-        }
-      } catch (e) {
-        typingEl.classList.remove('visible');
-        if (timerEl) timerEl.textContent = '';
-        addMessage('assistant', '⚠️ Не удалось соединиться с сервером.');
-      }
-
-      isLoading = false;
-      sendBtn.disabled = false;
-      inputEl.focus();
-    }
-
-    function clearChat() {
-      const msgs = messagesEl.querySelectorAll('.message');
-      msgs.forEach(m => m.remove());
-      history = [];
-      if (welcomeEl) welcomeEl.style.display = 'block';
-    }
-
-    // ─── ВКЛАДКИ ─────────────────────────────────────────
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-      document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-
-      if (tab === 'chat') {
-        document.getElementById('headerTitle').textContent = 'Чат с Варварой';
-        document.getElementById('headerSub').textContent = 'Твой персональный CPO-советник';
-        document.getElementById('headerAction').textContent = 'Очистить чат';
-        document.getElementById('headerAction').onclick = clearChat;
-        inputEl.focus();
-      } else {
-        document.getElementById('headerTitle').textContent = 'Задачи на будущее';
-        document.getElementById('headerSub').textContent = 'Бэклог идей и дел';
-        document.getElementById('headerAction').textContent = 'Скрыть выполненные';
-        document.getElementById('headerAction').onclick = toggleDone;
-        document.getElementById('backlogInput').focus();
-      }
-    }
-
-    // ─── БЭКЛОГ ───────────────────────────────────────────
-    let backlogItems = [];
-    let showDone = false;
-
-    function setFilter(filter) {
-      backlogFilter = filter;
-      document.getElementById('filterAll').classList.toggle('active', filter === 'all');
-      document.getElementById('filterVarvara').classList.toggle('active', filter === 'Варвара');
-      document.getElementById('filterHvostiki').classList.toggle('active', filter === 'Хвостики');
-      renderBacklog();
-    }
-
-    async function loadBacklog() {
-      try {
-        const res = await fetch('/api/backlog');
-        backlogItems = await res.json();
-        renderBacklog();
-        updateBadge();
-      } catch (_) {}
-    }
-
-    function updateBadge() {
-      const open = backlogItems.filter(i => !i.done).length;
-      const badge = document.getElementById('backlogBadge');
-      badge.style.display = open > 0 ? 'inline-flex' : 'none';
-      badge.textContent = open;
-    }
-
-    function renderBacklog() {
-      const list = document.getElementById('backlogList');
-      const filtered = backlogFilter === 'all'
-        ? backlogItems
-        : backlogItems.filter(i => i.tag === backlogFilter);
-      const open = filtered.filter(i => !i.done);
-      const done = filtered.filter(i => i.done);
-
-      if (backlogItems.length === 0) {
-        list.innerHTML = `<div class="backlog-empty"><div class="empty-icon">🎯</div><p>Пока пусто. Добавь первую задачу!</p></div>`;
-        return;
-      }
-
-      let html = '';
-
-      if (open.length > 0) {
-        html += `<div class="backlog-section-title">Открытые · ${open.length}</div>`;
-        open.forEach(item => { html += renderItem(item); });
-      }
-
-      if (done.length > 0) {
-        html += `<div class="done-divider" onclick="toggleDone()">
-          ${showDone ? '▾' : '▸'} Выполненные · ${done.length}
-        </div>`;
-        if (showDone) {
-          done.forEach(item => { html += renderItem(item); });
-        }
-      }
-
-      list.innerHTML = html;
-    }
-
-    function renderItem(item) {
-      const date = new Date(item.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-      return `
-        <div class="backlog-item ${item.done ? 'done' : ''}" id="bl-${item.id}">
-          <div class="backlog-check" onclick="toggleItem('${item.id}')"></div>
-          <div class="backlog-body">
-            <div class="backlog-text">${escapeHtml(item.text)}</div>
-            <div class="backlog-meta">
-              ${item.tag ? `<span class="backlog-tag">${escapeHtml(item.tag)}</span>` : ''}
-              <span class="backlog-date">${date}</span>
-            </div>
+        <div class="kanban-board" id="kanbanBoard">
+          <div class="empty-state" style="flex:1;min-height:300px">
+            <div class="empty-state-icon">📋</div><div class="empty-state-text">Выберите проект слева</div>
           </div>
-          <button class="backlog-del" onclick="deleteItem('${item.id}')" title="Удалить">×</button>
-        </div>`;
-    }
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
 
-    function escapeHtml(s) {
-      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
+<div class="modal-overlay hidden" id="modalOverlay" onclick="closeModalOnBackdrop(event)">
+  <div class="modal">
+    <h3>Новый проект</h3>
+    <div class="modal-field">
+      <label>Название</label>
+      <input type="text" id="newProjectName" placeholder="Например: Щенячий патруль"
+        onkeydown="if(event.key==='Enter')createProject()">
+    </div>
+    <div class="modal-field">
+      <label>Иконка</label>
+      <div class="modal-icons" id="iconPicker"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Отмена</button>
+      <button class="btn-modal-create" onclick="createProject()">Создать</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
 
-    async function addBacklogItem() {
-      const input = document.getElementById('backlogInput');
-      const tag = document.getElementById('backlogTag').value;
-      const text = input.value.trim();
-      if (!text) return;
-      input.value = '';
-      try {
-        const res = await fetch('/api/backlog', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, tag }),
-        });
-        const item = await res.json();
-        backlogItems.unshift(item);
-        renderBacklog();
-        updateBadge();
-      } catch (_) {}
-    }
+<script>
+marked.setOptions({breaks:true,gfm:true});
+const ICONS=['🚀','📱','🎯','🐾','📚','🔮','💡','🛠️','🎨','📊','🌟','⚙️','🏗️','🤖','💼','📁'];
+const MAX_VISIBLE=5;
+const state={projects:[],currentProjectId:null,tasks:[],activeTab:'chat',isSending:false,showAll:false,selectedIcon:ICONS[0]};
 
-    async function toggleItem(id) {
-      const item = backlogItems.find(i => i.id === id);
-      if (!item) return;
-      item.done = !item.done;
-      renderBacklog();
-      updateBadge();
-      try {
-        await fetch(`/api/backlog/${id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ done: item.done }),
-        });
-      } catch (_) {}
-    }
+async function init(){
+  renderIconPicker();
+  await loadProjects();
+  if(state.projects.length>0) await selectProject(state.projects[0].id);
+}
 
-    async function deleteItem(id) {
-      backlogItems = backlogItems.filter(i => i.id !== id);
-      renderBacklog();
-      updateBadge();
-      try {
-        await fetch(`/api/backlog/${id}`, { method: 'DELETE' });
-      } catch (_) {}
-    }
+async function loadProjects(){
+  const res=await fetch('/api/projects');
+  state.projects=await res.json();
+  renderSidebar();
+}
 
-    function toggleDone() {
-      showDone = !showDone;
-      const btn = document.getElementById('headerAction');
-      if (btn && document.getElementById('panelBacklog').classList.contains('active')) {
-        btn.textContent = showDone ? 'Скрыть выполненные' : 'Показать выполненные';
+function renderSidebar(){
+  const list=document.getElementById('projectsList');
+  const visible=state.showAll?state.projects:state.projects.slice(0,MAX_VISIBLE);
+  const hiddenCount=state.projects.length-MAX_VISIBLE;
+  list.innerHTML=visible.map(p=>`<div class="project-item ${p.id===state.currentProjectId?'active':''}" onclick="selectProject('${p.id}')">
+    <span class="project-item-icon">${p.icon}</span>
+    <span class="project-item-name">${escHtml(p.name)}</span>
+  </div>`).join('');
+  if(state.projects.length>MAX_VISIBLE&&!state.showAll){
+    list.innerHTML+=`<div class="sidebar-hidden-toggle" onclick="state.showAll=true;renderSidebar()">··· ещё ${hiddenCount}</div>`;
+  }
+}
+
+async function selectProject(id){
+  state.currentProjectId=id;
+  const p=state.projects.find(x=>x.id===id);
+  if(!p)return;
+  document.getElementById('headerIcon').textContent=p.icon;
+  document.getElementById('headerName').textContent=p.name;
+  document.getElementById('chatInput').placeholder=`Написать Варваре про «${p.name}»...`;
+  renderSidebar();
+  await loadTasks();
+  renderChatHistory();
+}
+
+async function loadTasks(){
+  if(!state.currentProjectId)return;
+  const res=await fetch(`/api/tasks?projectId=${state.currentProjectId}`);
+  state.tasks=await res.json();
+  renderKanban();
+}
+
+function renderKanban(){
+  const project=state.projects.find(p=>p.id===state.currentProjectId);
+  if(!project)return;
+  const board=document.getElementById('kanbanBoard');
+  board.innerHTML=project.columns.map((col,colIdx)=>{
+    const cards=state.tasks.filter(t=>t.column===col);
+    const isFirst=colIdx===0,isLast=colIdx===project.columns.length-1;
+    const safeCol=col.replace(/'/g,"\\'");
+    return `<div class="kanban-column">
+      <div class="column-header">
+        <span class="column-title">${escHtml(col)}</span>
+        <span class="column-count">${cards.length}</span>
+      </div>
+      <div class="column-cards">${cards.map(t=>renderCard(t,isFirst,isLast)).join('')}</div>
+      <div class="column-add-form">
+        <button class="column-add-btn" onclick="showInlineAdd(${colIdx})">+ Задача</button>
+        <div class="column-add-input-wrap" id="addForm-${colIdx}">
+          <textarea class="column-add-input" id="addInput-${colIdx}" rows="2" placeholder="Название задачи..."
+            onkeydown="handleAddKey(event,${colIdx},'${safeCol}')"></textarea>
+          <div class="column-add-actions">
+            <button class="btn-save-task" onclick="saveInlineTask(${colIdx},'${safeCol}')">Добавить</button>
+            <button class="btn-cancel-task" onclick="cancelInlineAdd(${colIdx})">Отмена</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCard(task,isFirst,isLast){
+  const date=new Date(task.createdAt).toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+  return `<div class="task-card">
+    <div class="task-card-header">
+      <div class="task-card-title" contenteditable="true"
+        onblur="saveCardTitle('${task.id}',this)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${escHtml(task.title)}</div>
+      <button class="task-card-delete" onclick="deleteTask('${task.id}')">×</button>
+    </div>
+    ${task.agent?`<div class="task-card-agent">${escHtml(task.agent)}</div>`:''}
+    <div class="task-card-footer">
+      <span class="task-card-date">${date}</span>
+      <div class="task-card-nav">
+        <button class="task-nav-btn" onclick="moveTask('${task.id}',-1)" ${isFirst?'disabled':''}>←</button>
+        <button class="task-nav-btn" onclick="moveTask('${task.id}',1)" ${isLast?'disabled':''}>→</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function showInlineAdd(colIdx){
+  const form=document.getElementById(`addForm-${colIdx}`);
+  form.previousElementSibling.style.display='none';
+  form.classList.add('visible');
+  document.getElementById(`addInput-${colIdx}`).focus();
+}
+function cancelInlineAdd(colIdx){
+  const form=document.getElementById(`addForm-${colIdx}`);
+  form.previousElementSibling.style.display='';
+  form.classList.remove('visible');
+  document.getElementById(`addInput-${colIdx}`).value='';
+}
+function handleAddKey(e,colIdx,col){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();saveInlineTask(colIdx,col);}
+  if(e.key==='Escape')cancelInlineAdd(colIdx);
+}
+async function saveInlineTask(colIdx,col){
+  const input=document.getElementById(`addInput-${colIdx}`);
+  const title=input.value.trim();
+  if(!title)return;
+  await createTask(title,col);
+  cancelInlineAdd(colIdx);
+}
+
+async function createTask(title,column='Бэклог'){
+  const res=await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({projectId:state.currentProjectId,title,column})});
+  const task=await res.json();
+  state.tasks.unshift(task);
+  renderKanban();
+  showToast('Задача добавлена','success');
+  return task;
+}
+
+async function moveTask(taskId,dir){
+  const project=state.projects.find(p=>p.id===state.currentProjectId);
+  const task=state.tasks.find(t=>t.id===taskId);
+  if(!task||!project)return;
+  const colIdx=project.columns.indexOf(task.column);
+  const newIdx=colIdx+dir;
+  if(newIdx<0||newIdx>=project.columns.length)return;
+  const newCol=project.columns[newIdx];
+  await fetch(`/api/tasks/${taskId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({column:newCol})});
+  task.column=newCol;
+  renderKanban();
+}
+
+async function deleteTask(taskId){
+  await fetch(`/api/tasks/${taskId}`,{method:'DELETE'});
+  state.tasks=state.tasks.filter(t=>t.id!==taskId);
+  renderKanban();
+}
+
+async function saveCardTitle(taskId,el){
+  const title=el.textContent.trim();
+  if(!title){el.textContent=state.tasks.find(t=>t.id===taskId)?.title||'';return;}
+  await fetch(`/api/tasks/${taskId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({title})});
+  const task=state.tasks.find(t=>t.id===taskId);
+  if(task)task.title=title;
+}
+
+function showAddTaskPanel(){
+  switchTab('tasks');
+  setTimeout(()=>{const btn=document.querySelector('.column-add-btn');if(btn)btn.click();},50);
+}
+
+function getChatHistory(){
+  if(!state.currentProjectId)return[];
+  try{return JSON.parse(localStorage.getItem('chat_'+state.currentProjectId)||'[]')}catch{return[]}
+}
+function saveChatHistory(history){
+  if(!state.currentProjectId)return;
+  localStorage.setItem('chat_'+state.currentProjectId,JSON.stringify(history.slice(-50)));
+}
+
+function renderChatHistory(){
+  const msgs=getChatHistory();
+  const container=document.getElementById('chatMessages');
+  const project=state.projects.find(p=>p.id===state.currentProjectId);
+  if(msgs.length===0){
+    container.innerHTML=`<div class="empty-state"><div class="empty-state-icon">${project?.icon||'💬'}</div><div class="empty-state-text">Начни диалог с Варварой про «${escHtml(project?.name||'')}»</div></div>`;
+    return;
+  }
+  container.innerHTML=msgs.map(m=>renderMessage(m.role,m.content)).join('');
+  scrollToBottom();
+}
+
+function renderMessage(role,content){
+  const avatar=role==='user'?'👤':'⚡';
+  const html=role==='assistant'?marked.parse(content):escHtml(content).replace(/\n/g,'<br>');
+  return `<div class="message ${role}"><div class="message-avatar">${avatar}</div><div class="message-bubble">${html}</div></div>`;
+}
+function scrollToBottom(){const c=document.getElementById('chatMessages');requestAnimationFrame(()=>{c.scrollTop=c.scrollHeight});}
+function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,150)+'px';}
+
+async function sendMessage(){
+  if(state.isSending)return;
+  const input=document.getElementById('chatInput');
+  const message=input.value.trim();
+  if(!message||!state.currentProjectId)return;
+  state.isSending=true;
+  document.getElementById('btnSend').disabled=true;
+  input.value='';input.style.height='auto';
+  const history=getChatHistory();
+  const container=document.getElementById('chatMessages');
+  if(container.querySelector('.empty-state'))container.innerHTML='';
+  container.insertAdjacentHTML('beforeend',renderMessage('user',message));
+  scrollToBottom();
+  const thinkId='think-'+Date.now();
+  container.insertAdjacentHTML('beforeend',`<div class="thinking-indicator" id="${thinkId}"><div class="thinking-dots"><span></span><span></span><span></span></div><span id="${thinkId}-t">Думает...</span></div>`);
+  scrollToBottom();
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message,history,projectId:state.currentProjectId})});
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let buf='';
+    while(true){
+      const{done,value}=await reader.read();
+      if(done)break;
+      buf+=decoder.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
+      for(const line of lines){
+        if(!line.startsWith('data: '))continue;
+        try{
+          const p=JSON.parse(line.slice(6));
+          if(p.thinking){const el=document.getElementById(`${thinkId}-t`);if(el)el.textContent=`Думает ${p.thinking}с...`;}
+          else if(p.text!==undefined){
+            document.getElementById(thinkId)?.remove();
+            container.insertAdjacentHTML('beforeend',renderMessage('assistant',p.text));
+            saveChatHistory([...history,{role:'user',content:message},{role:'assistant',content:p.text}]);
+            if(p.action?.type==='CREATE_TASK'){
+              await createTask(p.action.data.title,'Бэклог');
+              container.insertAdjacentHTML('beforeend',`<div class="task-created-notice">✓ Задача добавлена: «${escHtml(p.action.data.title)}»</div>`);
+            }
+            scrollToBottom();
+          }else if(p.error){
+            document.getElementById(thinkId)?.remove();
+            container.insertAdjacentHTML('beforeend',renderMessage('assistant',`Ошибка: ${escHtml(p.error)}`));
+            scrollToBottom();
+          }
+        }catch(_){}
       }
-      renderBacklog();
     }
+  }catch(e){
+    document.getElementById(thinkId)?.remove();
+    container.insertAdjacentHTML('beforeend',renderMessage('assistant','Ошибка соединения с сервером'));
+    scrollToBottom();
+  }
+  state.isSending=false;
+  document.getElementById('btnSend').disabled=false;
+  input.focus();
+}
 
-    // Загружаем бэклог при старте
-    loadBacklog();
-    inputEl.focus();
-  </script>
+function switchTab(tab){
+  state.activeTab=tab;
+  document.getElementById('tabChat').classList.toggle('active',tab==='chat');
+  document.getElementById('tabTasks').classList.toggle('active',tab==='tasks');
+  document.getElementById('tabBtnChat').classList.toggle('active',tab==='chat');
+  document.getElementById('tabBtnTasks').classList.toggle('active',tab==='tasks');
+}
+
+function renderIconPicker(){
+  state.selectedIcon=ICONS[0];
+  document.getElementById('iconPicker').innerHTML=ICONS.map((ic,i)=>
+    `<button class="icon-option ${i===0?'selected':''}" onclick="selectIcon('${ic}',this)">${ic}</button>`).join('');
+}
+function selectIcon(icon,el){
+  state.selectedIcon=icon;
+  document.querySelectorAll('.icon-option').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function openAddProjectModal(){
+  document.getElementById('newProjectName').value='';
+  renderIconPicker();
+  document.getElementById('modalOverlay').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('newProjectName').focus(),50);
+}
+function closeModal(){document.getElementById('modalOverlay').classList.add('hidden');}
+function closeModalOnBackdrop(e){if(e.target.id==='modalOverlay')closeModal();}
+
+async function createProject(){
+  const name=document.getElementById('newProjectName').value.trim();
+  if(!name)return;
+  const res=await fetch('/api/projects',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name,icon:state.selectedIcon})});
+  const project=await res.json();
+  state.projects.push(project);
+  closeModal();renderSidebar();
+  await selectProject(project.id);
+  showToast(`Проект «${name}» создан`,'success');
+}
+
+let toastTimer;
+function showToast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className=`toast ${type} show`;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
+}
+function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+init();
+</script>
 </body>
 </html>
