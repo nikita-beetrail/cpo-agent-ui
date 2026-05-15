@@ -393,7 +393,6 @@ const PRIORITY_CONFIG={
 const PRIORITY_ORDER=['critical','high','medium','low','someday'];
 
 function renderCard(task,isFirst,isLast){
-  const date=new Date(task.createdAt).toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
   const p=task.priority||'medium';
   const pc=PRIORITY_CONFIG[p]||PRIORITY_CONFIG.medium;
   return `<div class="task-card">
@@ -407,7 +406,6 @@ function renderCard(task,isFirst,isLast){
     <div class="task-card-footer">
       <span class="priority-badge ${p}" onclick="showPriorityDropdown(event,'${task.id}','${p}')">${pc.dot} ${pc.label}</span>
       <div style="display:flex;align-items:center;gap:6px">
-        <span class="task-card-date">${date}</span>
         <div class="task-card-nav">
           <button class="task-nav-btn" onclick="moveTask('${task.id}',-1)" ${isFirst?'disabled':''}>←</button>
           <button class="task-nav-btn" onclick="moveTask('${task.id}',1)" ${isLast?'disabled':''}>→</button>
