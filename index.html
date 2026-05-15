@@ -137,6 +137,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-save-task:hover{background:var(--accent-hover)}
 .btn-cancel-task{padding:6px 10px;background:transparent;border:1px solid var(--border-hover);border-radius:6px;color:var(--text-muted);font-size:12px;cursor:pointer}
 .btn-cancel-task:hover{color:var(--text-primary)}
+.priority-select{background:var(--bg-input);border:1px solid var(--border-hover);border-radius:6px;padding:5px 8px;color:var(--text-secondary);font-size:12px;font-family:inherit;outline:none;cursor:pointer;transition:border-color .15s}
+.priority-select:focus{border-color:var(--accent)}
+/* Priority badges */
+.priority-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;border-radius:4px;padding:2px 7px;cursor:pointer;transition:opacity .15s;user-select:none}
+.priority-badge:hover{opacity:.8}
+.priority-badge.critical{background:rgba(239,68,68,.15);color:#f87171}
+.priority-badge.high{background:rgba(251,146,60,.15);color:#fb923c}
+.priority-badge.medium{background:rgba(250,204,21,.12);color:#fbbf24}
+.priority-badge.low{background:rgba(96,165,250,.12);color:#60a5fa}
+.priority-badge.someday{background:rgba(100,116,139,.12);color:#94a3b8}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px)}
@@ -347,6 +357,13 @@ function renderKanban(){
         <div class="column-add-input-wrap" id="addForm-${colIdx}">
           <textarea class="column-add-input" id="addInput-${colIdx}" rows="2" placeholder="Название задачи..."
             onkeydown="handleAddKey(event,${colIdx},'${safeCol}')"></textarea>
+          <select class="priority-select" id="addPriority-${colIdx}">
+            <option value="critical">🔴 Критично</option>
+            <option value="high">🟠 Высокий</option>
+            <option value="medium" selected>🟡 Средний</option>
+            <option value="low">🔵 Низкий</option>
+            <option value="someday">⚪ Когда-нибудь</option>
+          </select>
           <div class="column-add-actions">
             <button class="btn-save-task" onclick="saveInlineTask(${colIdx},'${safeCol}')">Добавить</button>
             <button class="btn-cancel-task" onclick="cancelInlineAdd(${colIdx})">Отмена</button>
@@ -357,8 +374,19 @@ function renderKanban(){
   }).join('');
 }
 
+const PRIORITY_CONFIG={
+  critical:{label:'Критично',dot:'🔴'},
+  high:{label:'Высокий',dot:'🟠'},
+  medium:{label:'Средний',dot:'🟡'},
+  low:{label:'Низкий',dot:'🔵'},
+  someday:{label:'Когда-нибудь',dot:'⚪'}
+};
+const PRIORITY_ORDER=['critical','high','medium','low','someday'];
+
 function renderCard(task,isFirst,isLast){
   const date=new Date(task.createdAt).toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+  const p=task.priority||'medium';
+  const pc=PRIORITY_CONFIG[p]||PRIORITY_CONFIG.medium;
   return `<div class="task-card">
     <div class="task-card-header">
       <div class="task-card-title" contenteditable="true"
@@ -368,13 +396,24 @@ function renderCard(task,isFirst,isLast){
     </div>
     ${task.agent?`<div class="task-card-agent">${escHtml(task.agent)}</div>`:''}
     <div class="task-card-footer">
-      <span class="task-card-date">${date}</span>
-      <div class="task-card-nav">
-        <button class="task-nav-btn" onclick="moveTask('${task.id}',-1)" ${isFirst?'disabled':''}>←</button>
-        <button class="task-nav-btn" onclick="moveTask('${task.id}',1)" ${isLast?'disabled':''}>→</button>
+      <span class="priority-badge ${p}" onclick="cyclePriority('${task.id}','${p}')" title="Нажми для смены приоритета">${pc.dot} ${pc.label}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="task-card-date">${date}</span>
+        <div class="task-card-nav">
+          <button class="task-nav-btn" onclick="moveTask('${task.id}',-1)" ${isFirst?'disabled':''}>←</button>
+          <button class="task-nav-btn" onclick="moveTask('${task.id}',1)" ${isLast?'disabled':''}>→</button>
+        </div>
       </div>
     </div>
   </div>`;
+}
+
+async function cyclePriority(taskId,current){
+  const idx=PRIORITY_ORDER.indexOf(current);
+  const next=PRIORITY_ORDER[(idx+1)%PRIORITY_ORDER.length];
+  await fetch(`/api/tasks/${taskId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({priority:next})});
+  const task=state.tasks.find(t=>t.id===taskId);
+  if(task){task.priority=next;renderKanban();}
 }
 
 function showInlineAdd(colIdx){
@@ -397,13 +436,14 @@ async function saveInlineTask(colIdx,col){
   const input=document.getElementById(`addInput-${colIdx}`);
   const title=input.value.trim();
   if(!title)return;
-  await createTask(title,col);
+  const priority=document.getElementById(`addPriority-${colIdx}`)?.value||'medium';
+  await createTask(title,col,priority);
   cancelInlineAdd(colIdx);
 }
 
-async function createTask(title,column='Бэклог'){
+async function createTask(title,column='Бэклог',priority='medium'){
   const res=await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({projectId:state.currentProjectId,title,column})});
+    body:JSON.stringify({projectId:state.currentProjectId,title,column,priority})});
   const task=await res.json();
   state.tasks.unshift(task);
   renderKanban();
