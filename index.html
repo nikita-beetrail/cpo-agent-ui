@@ -754,13 +754,14 @@ function showToast(msg,type=''){
 function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function linkify(str){
   const escaped=escHtml(str);
-  // http/https ссылки
   const withLinks=escaped.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:var(--accent-light);text-decoration:underline;word-break:break-all">$1</a>');
-  // пути вида ~/... или /Users/...
-  return withLinks.replace(/(~\/[^\s<]+|\/Users\/[^\s<]+)/g,'<span onclick="copyPath(\'$1\')" title="Нажми чтобы скопировать путь" style="color:#a78bfa;cursor:pointer;text-decoration:underline;font-family:monospace;font-size:11px">$1</span>');
+  return withLinks.replace(/(~\/[^\s<]+|\/Users\/[^\s<]+)/g,'<span onclick="openFile(\'$1\')" title="Открыть файл" style="color:#a78bfa;cursor:pointer;text-decoration:underline;font-family:monospace;font-size:11px">$1</span>');
 }
-function copyPath(path){
-  navigator.clipboard.writeText(path).then(()=>showToast('Путь скопирован','success'));
+function openFile(path){
+  fetch(`/api/open?path=${encodeURIComponent(path)}`)
+    .then(r=>r.json())
+    .then(d=>{ if(!d.ok) showToast('Не удалось открыть файл','error'); })
+    .catch(()=>showToast('Ошибка открытия файла','error'));
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeManageEpicsModal();}});
 init();

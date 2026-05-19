@@ -190,6 +190,16 @@ app.post('/api/chat', (req, res) => {
   req.on('close', () => clearInterval(heartbeat));
 });
 
+app.get('/api/open', (req, res) => {
+  const { path: filePath } = req.query;
+  if (!filePath) return res.status(400).json({ error: 'path required' });
+  const resolved = filePath.replace(/^~/, process.env.HOME || '/Users/nikita');
+  execFile('open', [resolved], { env: buildEnv() }, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ ok: true });
+  });
+});
+
 app.get('/api/ping', (req, res) => res.json({ ok: true }));
 
 const PORT = process.env.PORT || 3737;
