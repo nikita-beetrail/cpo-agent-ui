@@ -122,6 +122,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .task-card-agent:empty{display:none}
 .task-card-epic{display:inline-block;font-size:10px;font-weight:600;color:#a78bfa;background:rgba(167,139,250,.12);border-radius:4px;padding:2px 7px;margin-top:5px;letter-spacing:.3px;text-transform:uppercase}
 .task-card-epic:empty{display:none}
+.task-card-desc-preview{font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;cursor:pointer}
+.task-card-desc-preview:empty{display:none}
+.task-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px)}
+.task-detail-modal{background:var(--bg-card);border:1px solid var(--border-hover);border-radius:14px;padding:24px;width:520px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:14px}
+.task-detail-title{font-size:16px;font-weight:700;color:var(--text-primary);line-height:1.4}
+.task-detail-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.task-detail-desc textarea{width:100%;min-height:160px;background:var(--bg-input);border:1px solid var(--border-hover);border-radius:8px;padding:10px 12px;color:var(--text-primary);font-size:13px;font-family:inherit;line-height:1.6;resize:vertical;outline:none;box-sizing:border-box}
+.task-detail-desc textarea:focus{border-color:var(--accent)}
+.task-detail-desc label{font-size:11px;color:var(--text-muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.task-detail-footer{display:flex;justify-content:flex-end;gap:8px}
 .task-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
 .task-card-date{font-size:11px;color:var(--text-muted)}
 .task-card-nav{display:flex;gap:4px}
@@ -415,6 +425,7 @@ function renderCard(task,isFirst,isLast){
     </div>
     ${task.epic?`<div class="task-card-epic">◆ ${escHtml(task.epic)}</div>`:''}
     ${task.agent?`<div class="task-card-agent">${escHtml(task.agent)}</div>`:''}
+    ${task.description?`<div class="task-card-desc-preview" onclick="openTaskDetail('${task.id}')">${escHtml(task.description)}</div>`:'<div class="task-card-desc-preview" onclick="openTaskDetail(\'${task.id}\')" style="color:var(--text-muted);opacity:.4">+ описание</div>'}
     <div class="task-card-footer">
       <span class="priority-badge ${p}" onclick="showPriorityDropdown(event,'${task.id}','${p}')">${pc.dot} ${pc.label}</span>
       <div style="display:flex;align-items:center;gap:6px">
@@ -489,6 +500,51 @@ async function createTask(title,column='Бэклог',priority='medium',epic='')
   renderKanban();
   showToast('Задача добавлена','success');
   return task;
+}
+
+function openTaskDetail(taskId){
+  const task=state.tasks.find(t=>t.id===taskId);
+  if(!task)return;
+  const existing=document.getElementById('taskDetailOverlay');
+  if(existing)existing.remove();
+  const overlay=document.createElement('div');
+  overlay.id='taskDetailOverlay';
+  overlay.className='task-detail-overlay';
+  overlay.onclick=e=>{if(e.target===overlay)closeTaskDetail();};
+  overlay.innerHTML=`
+    <div class="task-detail-modal">
+      <div class="task-detail-title">${escHtml(task.title)}</div>
+      <div class="task-detail-meta">
+        ${task.epic?`<span class="task-card-epic">◆ ${escHtml(task.epic)}</span>`:''}
+        <span class="priority-badge ${task.priority||'medium'}">${(PRIORITY_CONFIG[task.priority||'medium']||PRIORITY_CONFIG.medium).dot} ${(PRIORITY_CONFIG[task.priority||'medium']||PRIORITY_CONFIG.medium).label}</span>
+        <span style="font-size:11px;color:var(--text-muted)">${task.column}</span>
+      </div>
+      <div class="task-detail-desc">
+        <label>Описание и результат</label>
+        <textarea id="taskDetailDesc" placeholder="Опиши задачу, критерии выполнения и результат...">${escHtml(task.description||'')}</textarea>
+      </div>
+      <div class="task-detail-footer">
+        <button class="btn-secondary" onclick="closeTaskDetail()">Закрыть</button>
+        <button class="btn-primary" onclick="saveTaskDetail('${taskId}')">Сохранить</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('taskDetailDesc').focus();
+}
+
+async function saveTaskDetail(taskId){
+  const desc=document.getElementById('taskDetailDesc').value;
+  await fetch(`/api/tasks/${taskId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:desc})});
+  const task=state.tasks.find(t=>t.id===taskId);
+  if(task)task.description=desc;
+  closeTaskDetail();
+  renderKanban();
+  showToast('Описание сохранено','success');
+}
+
+function closeTaskDetail(){
+  const el=document.getElementById('taskDetailOverlay');
+  if(el)el.remove();
 }
 
 function getEpics(){
