@@ -1,5 +1,203 @@
 [
   {
+    "id": "1779188880703",
+    "projectId": "hvostiki",
+    "title": "[A08] Провести Go/No-Go — осознанное решение стартовать",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T11:08:00.703Z",
+    "epic": "Этап A: Инициализация"
+  },
+  {
+    "id": "1779188880701",
+    "projectId": "hvostiki",
+    "title": "[A06] Создать Реестр рисков — keystore, App Store, Supabase лимиты",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T11:08:00.701Z",
+    "epic": "Этап A: Инициализация"
+  },
+  {
+    "id": "1779188880699",
+    "projectId": "hvostiki",
+    "title": "[A05] Создать Карту результатов — что сдаём в конце каждого цикла",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T11:08:00.699Z",
+    "epic": "Этап A: Инициализация"
+  },
+  {
+    "id": "1779188880696",
+    "projectId": "hvostiki",
+    "title": "[A04] Написать Резюме проекта — цель, границы, MVP Хвостиков",
+    "column": "В разработке",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T11:08:00.696Z",
+    "epic": "Этап A: Инициализация"
+  },
+  {
+    "id": "1779184776518",
+    "projectId": "hvostiki",
+    "title": "Подключить аналитику PostHog или Firebase Analytics",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "low",
+    "createdAt": "2026-05-19T09:59:36.518Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184776515",
+    "projectId": "hvostiki",
+    "title": "Настроить Supabase logs + алерты на ошибки БД",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "medium",
+    "createdAt": "2026-05-19T09:59:36.515Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184776513",
+    "projectId": "hvostiki",
+    "title": "Подключить Sentry для Flutter — краши и ошибки до первого релиза",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:59:36.513Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184776510",
+    "projectId": "hvostiki",
+    "title": "Настроить TestFlight + Google Play Internal Testing",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:59:36.510Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184776508",
+    "projectId": "hvostiki",
+    "title": "Настроить CD через Fastlane или GitHub Actions для сборки .ipa/.aab",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:59:36.508Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184776506",
+    "projectId": "hvostiki",
+    "title": "Настроить подпись приложения: iOS provisioning + Android keystore + бэкап keystore",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:59:36.506Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184776503",
+    "projectId": "hvostiki",
+    "title": "Оформить Apple Developer Program ($99/год) + Google Play Console ($25) — параллельный трек",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:59:36.503Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713424",
+    "projectId": "hvostiki",
+    "title": "Настроить CI на GitHub Actions: lint + analyze + test на каждый PR",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "medium",
+    "createdAt": "2026-05-19T09:58:33.424Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713423",
+    "projectId": "hvostiki",
+    "title": "Создать Supabase Storage — бакеты для фото питомцев",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "medium",
+    "createdAt": "2026-05-19T09:58:33.423Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713421",
+    "projectId": "hvostiki",
+    "title": "Написать Row Level Security (RLS) политики для всех таблиц",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "medium",
+    "createdAt": "2026-05-19T09:58:33.421Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713420",
+    "projectId": "hvostiki",
+    "title": "Настроить схему БД + миграции через Supabase CLI",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "medium",
+    "createdAt": "2026-05-19T09:58:33.420Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713418",
+    "projectId": "hvostiki",
+    "title": "Настроить управление секретами: .env + flutter_dotenv, .env в .gitignore",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:58:33.418Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713415",
+    "projectId": "hvostiki",
+    "title": "Создать Flutter-проект + настроить flavors dev/prod",
+    "column": "В разработке",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:58:33.415Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1779184713412",
+    "projectId": "hvostiki",
+    "title": "Создать GitHub-репозиторий: ветки main + dev, защита main",
+    "column": "Продакшн",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:58:33.412Z"
+  },
+  {
+    "id": "1779184713408",
+    "projectId": "hvostiki",
+    "title": "Создать Supabase-проекты dev + prod — база для Auth, Storage и БД",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "high",
+    "createdAt": "2026-05-19T09:58:33.408Z",
+    "epic": "Цикл 1: Фундамент"
+  },
+  {
+    "id": "1778853349362",
+    "projectId": "varvara",
+    "title": "НАписать письмо Алишеру и руку по поводу приостановки",
+    "column": "Бэклог",
+    "agent": "",
+    "priority": "medium",
+    "createdAt": "2026-05-15T13:55:49.362Z"
+  },
+  {
     "id": "1778839944672",
     "projectId": "obuchenie",
     "title": "Создать проект: дашборд финансов",
@@ -88,7 +286,7 @@
   },
   {
     "id": "1778835710097",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Chrome DevTools MCP — тестировать лендинг Хвостиков прямо из Claude Code (видео 01:18:23)",
     "column": "Бэклог",
     "agent": "",
@@ -96,7 +294,7 @@
   },
   {
     "id": "1778835710096",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Git Worktree для Хвостиков — каждая фича в отдельном worktree, не ломаем основную ветку (видео 03:14:39)",
     "column": "Бэклог",
     "agent": "",
@@ -104,7 +302,7 @@
   },
   {
     "id": "1778835710094",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Subagents для Хвостиков — отдельный субагент на компонент/экран/фичу (видео 01:48:45)",
     "column": "Бэклог",
     "agent": "",
@@ -112,7 +310,7 @@
   },
   {
     "id": "1778835710092",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Superpowers для Хвостиков — системный процесс вайб-кодинга, цикл разработки (видео 03:44:07)",
     "column": "Бэклог",
     "agent": "",
@@ -120,7 +318,7 @@
   },
   {
     "id": "1778835710091",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "GitHub Actions для лендинга — автодеплой hvostiki.vercel.app при пуше в main (видео 03:32:00)",
     "column": "Бэклог",
     "agent": "",
@@ -128,7 +326,7 @@
   },
   {
     "id": "1778835710089",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Скиллы для Flutter — найти готовые на skills.sh или создать свой скилл для разработки (видео 01:28:37)",
     "column": "Бэклог",
     "agent": "",
@@ -136,7 +334,7 @@
   },
   {
     "id": "1778835710088",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Agent Teams: архитектор + разработчик + дизайнер через Claude Agents API, агенты взаимодействуют друг с другом (видео 02:20:06)",
     "column": "Бэклог",
     "agent": "",
@@ -144,7 +342,7 @@
   },
   {
     "id": "1778835710086",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "CLAUDE.md для Flutter-проекта Хвостики — правила вайб-кодинга, стек, соглашения (видео 38:27)",
     "column": "Бэклог",
     "agent": "",
@@ -152,7 +350,7 @@
   },
   {
     "id": "1778835344208",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Создать Agents Team для разработки мобильного приложения: разработчик, архитектор, дизайнер — полноценная команда с взаимодействием между агентами (Claude Agents API)",
     "column": "Бэклог",
     "agent": "",
@@ -160,7 +358,7 @@
   },
   {
     "id": "1747267200003",
-    "projectId": "hvostiki",
+    "projectId": "obuchenie",
     "title": "Субагенты для Хвостиков и Щенячьего патруля",
     "column": "Бэклог",
     "agent": "",

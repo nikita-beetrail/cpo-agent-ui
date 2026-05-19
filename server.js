@@ -94,7 +94,7 @@ app.get('/api/tasks', (req, res) => {
 });
 
 app.post('/api/tasks', (req, res) => {
-  const { projectId, title, column, agent, priority } = req.body;
+  const { projectId, title, column, agent, priority, epic } = req.body;
   if (!projectId || !title?.trim()) return res.status(400).json({ error: 'projectId and title required' });
   const VALID_PRIORITIES = ['critical','high','medium','low','someday'];
   const tasks = readTasks();
@@ -104,6 +104,7 @@ app.post('/api/tasks', (req, res) => {
     title: title.trim(),
     column: column || 'Бэклог',
     agent: agent || '',
+    epic: epic || '',
     priority: VALID_PRIORITIES.includes(priority) ? priority : 'medium',
     createdAt: new Date().toISOString()
   };
@@ -116,7 +117,7 @@ app.patch('/api/tasks/:id', (req, res) => {
   const tasks = readTasks();
   const task = tasks.find(t => t.id === req.params.id);
   if (!task) return res.status(404).json({ error: 'not found' });
-  ['column', 'title', 'agent', 'priority', 'projectId'].forEach(k => {
+  ['column', 'title', 'agent', 'priority', 'projectId', 'epic'].forEach(k => {
     if (req.body[k] !== undefined) task[k] = req.body[k];
   });
   writeTasks(tasks);
