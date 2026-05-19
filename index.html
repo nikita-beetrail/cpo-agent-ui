@@ -425,7 +425,7 @@ function renderCard(task,isFirst,isLast){
     </div>
     ${task.epic?`<div class="task-card-epic">◆ ${escHtml(task.epic)}</div>`:''}
     ${task.agent?`<div class="task-card-agent">${escHtml(task.agent)}</div>`:''}
-    ${task.description?`<div class="task-card-desc-preview" onclick="openTaskDetail('${task.id}')">${escHtml(task.description)}</div>`:'<div class="task-card-desc-preview" onclick="openTaskDetail(\'${task.id}\')" style="color:var(--text-muted);opacity:.4">+ описание</div>'}
+    ${task.description?`<div class="task-card-desc-preview">${linkify(task.description)}</div><div style="font-size:10px;color:var(--text-muted);margin-top:3px;cursor:pointer" onclick="openTaskDetail('${task.id}')">✎ редактировать</div>`:'<div class="task-card-desc-preview" onclick="openTaskDetail(\'${task.id}\')" style="color:var(--text-muted);opacity:.4">+ описание</div>'}
     <div class="task-card-footer">
       <span class="priority-badge ${p}" onclick="showPriorityDropdown(event,'${task.id}','${p}')">${pc.dot} ${pc.label}</span>
       <div style="display:flex;align-items:center;gap:6px">
@@ -521,6 +521,7 @@ function openTaskDetail(taskId){
       </div>
       <div class="task-detail-desc">
         <label>Описание и результат</label>
+        ${task.description?`<div style="background:var(--bg-input);border:1px solid var(--border-hover);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.7;color:var(--text-primary);white-space:pre-wrap;word-break:break-word;margin-bottom:8px">${linkify(task.description)}</div>`:''}
         <textarea id="taskDetailDesc" placeholder="Опиши задачу, критерии выполнения и результат...">${escHtml(task.description||'')}</textarea>
       </div>
       <div class="task-detail-footer">
@@ -751,6 +752,16 @@ function showToast(msg,type=''){
   clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
 }
 function escHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function linkify(str){
+  const escaped=escHtml(str);
+  // http/https ссылки
+  const withLinks=escaped.replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:var(--accent-light);text-decoration:underline;word-break:break-all">$1</a>');
+  // пути вида ~/... или /Users/...
+  return withLinks.replace(/(~\/[^\s<]+|\/Users\/[^\s<]+)/g,'<span onclick="copyPath(\'$1\')" title="Нажми чтобы скопировать путь" style="color:#a78bfa;cursor:pointer;text-decoration:underline;font-family:monospace;font-size:11px">$1</span>');
+}
+function copyPath(path){
+  navigator.clipboard.writeText(path).then(()=>showToast('Путь скопирован','success'));
+}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeManageEpicsModal();}});
 init();
 </script>
