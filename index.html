@@ -425,7 +425,7 @@ function renderCard(task,isFirst,isLast){
     </div>
     ${task.epic?`<div class="task-card-epic">◆ ${escHtml(task.epic)}</div>`:''}
     ${task.agent?`<div class="task-card-agent">${escHtml(task.agent)}</div>`:''}
-    ${task.description?`<div class="task-card-desc-preview">${linkify(task.description)}</div><div style="font-size:10px;color:var(--text-muted);margin-top:3px;cursor:pointer" onclick="openTaskDetail('${task.id}')">✎ редактировать</div>`:'<div class="task-card-desc-preview" onclick="openTaskDetail(\'${task.id}\')" style="color:var(--text-muted);opacity:.4">+ описание</div>'}
+    ${task.description?`<div class="task-card-desc-preview" style="cursor:pointer" onclick="openTaskDetail('${task.id}')">${linkify(task.description)}</div>`:'<div class="task-card-desc-preview" onclick="openTaskDetail(\'${task.id}\')" style="color:var(--text-muted);opacity:.4">+ описание</div>'}
     <div class="task-card-footer">
       <span class="priority-badge ${p}" onclick="showPriorityDropdown(event,'${task.id}','${p}')">${pc.dot} ${pc.label}</span>
       <div style="display:flex;align-items:center;gap:6px">
